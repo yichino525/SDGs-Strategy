@@ -1,0 +1,92 @@
+:root {
+  font-family: Inter, "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  color: #edf8f4;
+  background: #061820;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(circle at 15% 0%, #123a43 0, #071f2a 38%, #041117 100%); }
+button { font: inherit; }
+button:focus-visible { outline: 3px solid #ffe28a; outline-offset: 3px; }
+main { width: min(1440px, 100%); margin: 0 auto; padding: 40px clamp(18px, 4vw, 64px) 72px; }
+
+.hero { display: flex; justify-content: space-between; align-items: end; gap: 32px; margin-bottom: 30px; }
+.eyebrow { margin: 0 0 10px; color: #72d9c2; font-size: .76rem; font-weight: 800; letter-spacing: .16em; }
+h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(2.2rem, 5vw, 5.4rem); font-weight: 500; line-height: .98; letter-spacing: -.04em; }
+.lead { max-width: 720px; color: #b9ceca; line-height: 1.8; }
+.turn-badge { min-width: 130px; padding: 16px; border: 1px solid #2d5057; border-radius: 18px; background: #0c2731; text-align: center; }
+.turn-badge span { display: block; color: #86aaa8; font-size: .7rem; }
+.turn-badge strong { font-size: 1.5rem; }
+
+.dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.resource-card { display: flex; align-items: center; gap: 13px; padding: 15px 18px; border: 1px solid #24454c; border-radius: 15px; background: rgba(9, 36, 44, .8); }
+.resource-card > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 50%; background: #153c42; color: #72d9c2; font-weight: 800; }
+.resource-card small, .resource-card strong { display: block; }
+.resource-card small { color: #89aaa7; }
+.resource-card strong { font-size: 1.35rem; }
+
+.game-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(340px, .75fr); gap: 18px; align-items: start; }
+.scene-card, .goals-panel { overflow: hidden; border: 1px solid #24454c; border-radius: 24px; background: rgba(8, 30, 38, .9); box-shadow: 0 20px 60px rgba(0,0,0,.22); }
+.city-scene { position: relative; min-height: 270px; overflow: hidden; background: linear-gradient(#194e62, #efb36e 72%, #143f43 73%); transition: background .5s; }
+.city-scene.mood-bright { background: linear-gradient(#247899, #ffd890 72%, #1b5750 73%); }
+.city-scene.mood-cloudy { background: linear-gradient(#324951, #9b8f83 72%, #273d3d 73%); }
+.sky-orb { position: absolute; top: 40px; right: 15%; width: 70px; height: 70px; border-radius: 50%; background: #ffe3a0; box-shadow: 0 0 50px #ffd986; }
+.city-line { position: absolute; inset: auto 0 0; display: flex; align-items: end; gap: 3%; padding: 0 7%; height: 58%; }
+.city-line span { flex: 1; height: 55%; background: #102f35; box-shadow: inset 0 12px #1e4a50; }
+.city-line span:nth-child(2) { height: 85%; }
+.city-line span:nth-child(3) { height: 65%; border-radius: 50% 50% 0 0; background: #245849; }
+.city-line span:nth-child(4) { height: 100%; }
+.scene-copy { position: absolute; left: 24px; bottom: 22px; z-index: 2; max-width: 330px; padding: 13px 16px; border-radius: 12px; background: rgba(3, 20, 25, .75); backdrop-filter: blur(8px); }
+.scene-copy p { margin: 0 0 4px; color: #8ec5bc; font-size: .75rem; }
+.scene-copy strong { line-height: 1.5; }
+
+.decision-panel { padding: clamp(22px, 4vw, 38px); }
+.turn-label { margin: 0; color: #72d9c2; font-weight: 800; }
+.decision-panel h2, .goals-panel h2 { margin: 6px 0 10px; font-size: clamp(1.45rem, 3vw, 2.1rem); }
+.decision-panel > p:not(.turn-label) { color: #b9ceca; line-height: 1.7; }
+.actions { display: grid; gap: 10px; margin-top: 24px; }
+.action-card { display: grid; gap: 6px; width: 100%; padding: 17px 18px; border: 1px solid #31565d; border-radius: 14px; color: inherit; background: #0c2a34; text-align: left; cursor: pointer; transition: transform .18s, border-color .18s, background .18s; }
+.action-card:hover { transform: translateY(-2px); border-color: #72d9c2; background: #103640; }
+.action-title { color: #fff; font-weight: 800; }
+.action-card > span:not(.action-title) { color: #bdd0cc; }
+.action-card small { color: #82a8a3; line-height: 1.45; }
+.notice { margin: 0; padding: 0 38px 24px; color: #7ca5a1; font-size: .8rem; }
+.ending { min-height: 310px; display: flex; flex-direction: column; justify-content: center; }
+.primary-button { align-self: start; margin-top: 14px; padding: 13px 19px; border: 0; border-radius: 12px; background: #72d9c2; color: #08242d; font-weight: 800; cursor: pointer; }
+
+.goals-panel { padding: 24px; }
+.section-heading { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
+.section-heading > span { padding: 6px 9px; border-radius: 8px; background: #12353d; color: #91b5b0; font-size: .72rem; }
+.goal-grid { display: grid; gap: 8px; margin-top: 15px; }
+.goal { display: grid; grid-template-columns: 34px 1fr 30px; align-items: center; gap: 9px; padding: 7px; border-radius: 10px; background: #0b2831; }
+.goal-number { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 8px; background: var(--goal-color); color: white; font-size: .8rem; font-weight: 900; }
+.goal small { display: block; margin-bottom: 5px; color: #c0d3cf; }
+.goal > strong { text-align: right; font-size: .85rem; }
+.meter { height: 5px; overflow: hidden; border-radius: 5px; background: #193a42; }
+.meter span { display: block; height: 100%; border-radius: inherit; background: var(--goal-color); transition: width .4s ease; }
+.history { margin-top: 22px; padding-top: 18px; border-top: 1px solid #24454c; }
+.history h3 { font-size: .85rem; color: #89aaa7; }
+.history ol { margin: 0; padding-left: 20px; }
+.history li { margin: 8px 0; color: #d7e5e2; font-size: .82rem; line-height: 1.5; }
+.history li span { display: block; color: #739994; font-size: .7rem; }
+
+@media (max-width: 900px) {
+  .dashboard { grid-template-columns: repeat(2, 1fr); }
+  .game-layout { grid-template-columns: 1fr; }
+  .goals-panel { order: 2; }
+}
+
+@media (max-width: 560px) {
+  main { padding-top: 24px; }
+  .hero { flex-direction: column; align-items: stretch; gap: 14px; }
+  .turn-badge { min-width: 92px; padding: 11px; }
+  .lead { font-size: .9rem; }
+  .dashboard { gap: 8px; }
+  .resource-card { padding: 11px; gap: 8px; }
+  .resource-card > span { width: 32px; height: 32px; }
+  .city-scene { min-height: 220px; }
+  .action-card { min-height: 108px; }
+  .goals-panel { padding: 18px; }
+}
