@@ -17,6 +17,8 @@ const ResourceCard = ({ label, value, icon }: { label: string; value: number; ic
 
 function App() {
   const [state, setState] = useState<GameState>(() => loadGame() ?? createInitialState());
+  const [showPrologue, setShowPrologue] = useState(state.history.length === 0);
+  const [lastAction, setLastAction] = useState<Action | null>(null);
   const [notice, setNotice] = useState("選択は自動的に保存されます");
   const currentTurn = turns[state.turnIndex];
   const average = useMemo(() => averageGoalScore(state), [state]);
@@ -28,14 +30,46 @@ function App() {
   const chooseAction = (action: Action) => {
     if (!currentTurn) return;
     setState((previous) => applyAction(previous, action, currentTurn.label, turns.length));
+    setLastAction(action);
     setNotice(`「${action.title}」を選びました`);
   };
 
   const restart = () => {
     clearSave();
     setState(createInitialState());
+    setLastAction(null);
+    setShowPrologue(true);
     setNotice("新しいゲームを始めました");
   };
+
+  const formatDelta = (value: number) => `${value > 0 ? "+" : ""}${value}`;
+
+  if (showPrologue) {
+    return (
+      <main className="prologue-page">
+        <section className="prologue">
+          <div className="prologue-art" aria-hidden="true">
+            <div className="prologue-sun" />
+            <div className="prologue-window"><span /><span /></div>
+            <div className="prologue-person" />
+          </div>
+          <div className="prologue-copy">
+            <p className="chapter-label">PROLOGUE · 2015年 秋</p>
+            <h1>世界が未来を約束した日、<br />あなたの物語が始まる。</h1>
+            <div className="story-text">
+              <p>窓の外には、いつもと同じ日本のまちが広がっています。</p>
+              <p>けれど今日、世界は2030年までに達成したい17の目標――SDGsを掲げました。貧困、教育、働き方、気候。どれも大切ですが、使える予算と時間には限りがあります。</p>
+              <p>あなたは、まちの未来を任された若い政策チームの一員です。選ばなかった道にも意味があり、すべてを一度に良くすることはできません。</p>
+            </div>
+            <blockquote>「2030年の窓から、どんな景色を見たい？」</blockquote>
+            <button className="start-button" onClick={() => setShowPrologue(false)}>
+              <span>最初の四半期へ</span><strong>物語を始める →</strong>
+            </button>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main>
@@ -71,17 +105,47 @@ function App() {
             </div>
           </div>
 
-          {!state.completed && currentTurn ? (
+          {lastAction ? (
+            <div className="decision-panel result-panel" aria-live="polite">
+              <p className="result-kicker">YOUR DECISION</p>
+              <h2>選択が、まちを動かしました。</h2>
+              <div className="chosen-action">
+                <span>今回の選択</span>
+                <strong>{lastAction.title}</strong>
+                <p>{lastAction.tradeoff}</p>
+              </div>
+              <h3>変化したもの</h3>
+              <div className="impact-grid">
+                {(["budget", "economy", "trust"] as const).map((key) => {
+                  const value = lastAction.effects[key];
+                  if (!value) return null;
+                  const labels = { budget: "予算", economy: "経済", trust: "社会的信頼" };
+                  return <div className={`impact ${value > 0 ? "positive" : "negative"}`} key={key}><span>{labels[key]}</span><strong>{formatDelta(value)}</strong></div>;
+                })}
+                {Object.entries(lastAction.effects.goals).map(([id, value]) => {
+                  if (!value) return null;
+                  const goal = goals.find((item) => item.id === Number(id));
+                  return <div className={`impact ${value > 0 ? "positive" : "negative"}`} key={id}><span>目標{id}・{goal?.shortName}</span><strong>{formatDelta(value)}</strong></div>;
+                })}
+              </div>
+              <p className="result-note">良くなった数字だけでなく、負担や後回しになった課題も次の判断につながります。</p>
+              <button className="primary-button wide" onClick={() => setLastAction(null)}>
+                {state.completed ? "4ターンの結果を見る" : "次の四半期へ進む"} →
+              </button>
+            </div>
+          ) : !state.completed && currentTurn ? (
             <div className="decision-panel">
-              <p className="turn-label">{currentTurn.label}</p>
+              <div className="turn-heading"><p className="turn-label">{currentTurn.label}</p><span>選択 {state.turnIndex + 1} / {turns.length}</span></div>
               <h2>{currentTurn.headline}</h2>
               <p>{currentTurn.context}</p>
               <div className="actions">
                 {currentTurn.actions.map((action) => (
                   <button className="action-card" key={action.id} onClick={() => chooseAction(action)}>
+                    <span className="action-index">選択肢 {String.fromCharCode(65 + currentTurn.actions.indexOf(action))}</span>
                     <span className="action-title">{action.title}</span>
                     <span>{action.description}</span>
                     <small>{action.tradeoff}</small>
+                    <b>この方針を選ぶ →</b>
                   </button>
                 ))}
               </div>
