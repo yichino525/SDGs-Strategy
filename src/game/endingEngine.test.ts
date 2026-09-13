@@ -18,4 +18,14 @@ describe("エンディング", () => {
     expect(ending.strongest).toBeDefined();
     expect(ending.attention).toBeDefined();
   });
+  it("複数の傾向が同点なら順番で決めず複合型にする", () => {
+    const state = createInitialState();
+    state.history = [
+      { turnId: "0", turnLabel: "", actionId: "child-support", actionTitle: "" },
+      { turnId: "1", turnLabel: "", actionId: "road-investment", actionTitle: "" },
+      { turnId: "2", turnLabel: "", actionId: "work-balance", actionTitle: "" },
+      { turnId: "3", turnLabel: "", actionId: "water-renewal", actionTitle: "" },
+    ];
+    expect(buildEnding(state, goals).profile.id).toBe("balanced");
+  });
 });

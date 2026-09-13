@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { turns } from '../data/turns';
+import { implementationPlans } from '../data/strategy';
 import { applyAction, createInitialState } from './scoreEngine';
 
 describe('政策の積み重ね', () => {
@@ -34,5 +35,20 @@ describe('政策の積み重ね', () => {
   it('保存から結果と未発生の投資を復元できる', () => {
     const state = applyAction(createInitialState(), turns[0].actions[0], '', 4);
     expect(JSON.parse(JSON.stringify(state))).toEqual(state);
+  });
+  it('実施方法を変えても元の政策IDと連鎖を引き継ぐ', () => {
+    let state = applyAction(createInitialState(), turns[0].actions[0], turns[0].label, 4);
+    const base = turns[1].actions[0];
+    const option = implementationPlans[base.id].options[1];
+    const implemented = {
+      ...base,
+      title: `${base.title}／${option.title}`,
+      effects: option.effects,
+      resultStory: option.resultStory,
+    };
+    state = applyAction(state, implemented, turns[1].label, 4);
+    expect(state.history[1].actionId).toBe('community-bus');
+    expect(state.report?.stories).toContain(option.resultStory);
+    expect(state.report?.stories.some((story) => story.includes('居場所 × 移動手段'))).toBe(true);
   });
 });

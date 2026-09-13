@@ -4,6 +4,7 @@ export type Goal = {
   id: GoalId;
   shortName: string;
   color: string;
+  ink: "#ffffff" | "#102027";
 };
 
 export type Resources = {
@@ -21,6 +22,9 @@ export type Action = {
   title: string;
   description: string;
   tradeoff: string;
+  audience: string;
+  timing: "すぐ" | "あとから";
+  resultStory?: string;
   effects: Effects;
 };
 
@@ -29,6 +33,8 @@ export type Turn = {
   label: string;
   headline: string;
   context: string;
+  scenarioKind: "historical-frame" | "fictional";
+  source?: { title: string; url: string; checkedAt: string };
   actions: Action[];
 };
 
@@ -40,7 +46,7 @@ export type HistoryEntry = {
 };
 
 export type GameState = {
-  report?: { title: string; stories: string[]; effects: Effects };
+  report?: { title: string; stories: string[]; effects: Effects; income?: number };
   pending?: { due: number; title: string; effects: Effects }[];
   version: 1;
   turnIndex: number;

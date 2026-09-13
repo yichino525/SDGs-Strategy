@@ -10,10 +10,13 @@ export const createInitialState = (): GameState => ({
   version: 1,
   turnIndex: 0,
   goals: Object.fromEntries(goals.map((goal) => [goal.id, 50])) as Record<GoalId, number>,
-  resources: { budget: 60, economy: 50, trust: 50 },
+  resources: { budget: 32, economy: 50, trust: 50 },
   history: [],
   completed: false,
 });
+
+export const quarterlyRevenue = (economy: number) =>
+  clamp(3 + Math.round((economy - 50) / 15), 2, 5);
 
 export const applyAction = (
   state: GameState,
@@ -24,7 +27,7 @@ export const applyAction = (
   if (state.completed || state.resources.budget + (action.effects.budget ?? 0) < 0) return state;
 
   const effects: Effects = { ...action.effects, goals: { ...action.effects.goals } };
-  const stories: string[] = [];
+  const stories: string[] = action.resultStory ? [action.resultStory] : [];
   const merge = (extra: Effects) => {
     for (const key of ["budget", "economy", "trust"] as const) effects[key] = (effects[key] ?? 0) + (extra[key] ?? 0);
     for (const [id, value] of Object.entries(extra.goals)) effects.goals[Number(id)] = (effects.goals[Number(id)] ?? 0) + (value ?? 0);
@@ -41,6 +44,10 @@ export const applyAction = (
   }
   const future = delayed[action.id];
   if (future) pending.push({ ...future, due: nextTurnIndex + 2 });
+
+  const economyAfterPolicy = clamp(state.resources.economy + (effects.economy ?? 0));
+  const income = quarterlyRevenue(economyAfterPolicy);
+  merge({ budget: income, goals: {} });
 
   const nextGoals = { ...state.goals };
   for (const [rawId, change] of Object.entries(effects.goals)) {
@@ -59,7 +66,7 @@ export const applyAction = (
   return {
     ...state,
     pending: pending.filter(item => item.due > nextTurnIndex),
-    report: { title: action.title, stories, effects: actual },
+    report: { title: action.title, stories, effects: actual, income },
     turnIndex: nextTurnIndex,
     completed: nextTurnIndex >= totalTurns,
     goals: nextGoals,

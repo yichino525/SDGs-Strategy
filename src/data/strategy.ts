@@ -21,6 +21,68 @@ export const advisers = [
   { name: "佐藤 凪", role: "地域の高校生", quote: "夏の通学路がもっと涼しかったら。今までの政策を生かせないかな。" },
 ];
 
+export type ImplementationOption = {
+  id: string;
+  title: string;
+  description: string;
+  tradeoff: string;
+  audience: string;
+  timing: "すぐ" | "あとから";
+  effects: Effects;
+  resultStory: string;
+};
+
+type ImplementationPlan = {
+  question: string;
+  context: string;
+  voices: { role: string; text: string }[];
+  options: ImplementationOption[];
+};
+
+export const implementationPlans: Record<string, ImplementationPlan> = {
+  "community-bus": {
+    question: "地域バスを、どの形で始めますか？",
+    context: "同じ政策でも、始め方によって届く人、費用、住民との関係が変わります。",
+    voices: [
+      { role: "高校生", text: "部活の後にも乗れる便がほしいです。" },
+      { role: "高齢の住民", text: "病院まで乗り換えずに行きたいです。" },
+      { role: "交通担当職員", text: "全市一斉なら早いですが、赤字路線を直しにくくなります。" },
+    ],
+    options: [
+      {
+        id: "full-service",
+        title: "全市で一斉に運行する",
+        description: "学校、病院、駅を結ぶ路線を最初から広く走らせます。",
+        tradeoff: "多くの人へすぐ届きますが、最も大きな予算が必要です。",
+        audience: "市内全域の住民",
+        timing: "すぐ",
+        effects: { budget: -12, trust: 4, goals: { 3: 4, 10: 5, 11: 8, 13: 2 } },
+        resultStory: "市内各地で小型バスが走り始めました。一方、利用の少ない便をどう支えるかという議論も続いています。",
+      },
+      {
+        id: "pilot-service",
+        title: "2地区で試験運行する",
+        description: "通院と通学に困る人が多い地区から、小さく始めます。",
+        tradeoff: "失敗を直しやすい一方、まだ利用できない地区が残ります。",
+        audience: "対象地区の学生・高齢者",
+        timing: "すぐ",
+        effects: { budget: -6, trust: 2, goals: { 3: 2, 10: 2, 11: 4, 13: 1 } },
+        resultStory: "2地区で試験運行が始まりました。対象外の住民からは、次の地区を早く決めてほしいという声も届いています。",
+      },
+      {
+        id: "co-designed-service",
+        title: "住民と路線を共同設計する",
+        description: "利用者、運転手、商店と話し合い、必要な時間と道を選びます。",
+        tradeoff: "便数は少なめですが、納得して使える路線を作りやすくなります。",
+        audience: "利用者・商店・運転手",
+        timing: "あとから",
+        effects: { budget: -8, trust: 6, goals: { 3: 2, 10: 4, 11: 5, 13: 1 } },
+        resultStory: "住民会議で朝夕の便と病院ルートが決まりました。話し合いに時間はかかりましたが、地域で支える動きが生まれています。",
+      },
+    ],
+  },
+};
+
 export const endingProfiles = [
   {
     id: "inclusive",
@@ -41,3 +103,9 @@ export const endingProfiles = [
     actionIds: ["local-business", "walking-city", "job-training", "green-roofs"],
   },
 ] as const;
+
+export const balancedEnding = {
+  id: "balanced",
+  title: "いくつもの道を結ぶまち",
+  text: "一つの考えに決めつけず、暮らし、技術、地域の力を組み合わせたあなた。残された課題も、次の対話へつながっています。",
+} as const;

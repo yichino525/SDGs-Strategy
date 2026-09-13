@@ -13,6 +13,8 @@
 .adviser p { line-height: 1.7; color: #e0ece9; }
 .adviser small { color: #bbcfcb; }
 .policy-hint { background: #1b4149; padding: 8px; border-radius: 6px; font-size: .8rem; line-height: 1.5; }
+.action-preview { display: flex; flex-wrap: wrap; gap: 6px; }
+.action-preview > span { padding: 6px 9px; border: 1px solid #416a70; border-radius: 999px; background: #0c2b34; color: #d7e8e4; font-size: .74rem; }
 .future-panel { padding: 16px; border: 1px solid #f0c274; border-radius: 12px; margin-bottom: 24px; }
 .future-panel p { line-height: 1.6; }
 .future-panel strong { color: #f0c274; }
@@ -61,7 +63,17 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .turn-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .turn-heading p { margin: 0; }
 .turn-heading span { padding: 5px 9px; border-radius: 999px; background: #173f48; color: #9fd9cd; font-size: .72rem; font-weight: 700; }
+.scenario-note { display: grid; gap: 5px; margin-top: 14px; padding: 11px 13px; border: 1px solid #315760; border-radius: 10px; background: #0b2a33; font-size: .72rem; line-height: 1.5; }
+.scenario-note strong { color: #f0c274; }
+.scenario-note span { color: #9dbab5; }
+.scenario-note a { color: #8debd5; }
 .actions { display: grid; gap: 10px; margin-top: 24px; }
+.voices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0 6px; }
+.voices blockquote { margin: 0; padding: 13px; border: 1px solid #315760; border-radius: 11px; background: #102e37; }
+.voices strong { color: #f0c274; font-size: .72rem; }
+.voices p { margin: 7px 0 0; color: #c8d9d6; font-size: .8rem; line-height: 1.55; }
+.back-button { margin-bottom: 18px; padding: 0; border: 0; background: transparent; color: #91cfc2; font-size: .8rem; cursor: pointer; }
+.implementation-card { border-left-color: #f0c274; }
 .action-card { position: relative; display: grid; gap: 7px; width: 100%; padding: 19px 20px; border: 1px solid #38626a; border-left: 4px solid #72d9c2; border-radius: 14px; color: inherit; background: linear-gradient(100deg, #10323c, #0a2730); text-align: left; cursor: pointer; transition: transform .18s, border-color .18s, background .18s; }
 .action-card:hover { transform: translateY(-3px) scale(1.005); border-color: #8debd5; background: linear-gradient(100deg, #17434d, #0d3039); box-shadow: 0 12px 26px rgba(0,0,0,.2); }
 .action-index { color: #72d9c2; font-size: .68rem; font-weight: 900; letter-spacing: .12em; }
@@ -87,6 +99,10 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .chosen-action span { color: #87aaa6; font-size: .72rem; }
 .chosen-action strong { margin-top: 4px; color: #fff; font-size: 1.2rem; }
 .chosen-action p { margin: 8px 0 0; color: #acc7c2; line-height: 1.55; }
+.income-note { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: -10px 0 22px; padding: 13px 15px; border: 1px solid #42666b; border-radius: 11px; background: #0d2c35; }
+.income-note span { color: #a9c7c1; font-size: .78rem; }
+.income-note strong { color: #75edbf; }
+.income-note small { grid-column: 1 / -1; color: #7fa49f; }
 .result-panel h3 { margin: 0 0 10px; font-size: .86rem; color: #a8c6c1; }
 .impact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .impact { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 13px; border-radius: 10px; background: #102d35; }
@@ -103,7 +119,7 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .section-heading > span { padding: 6px 9px; border-radius: 8px; background: #12353d; color: #91b5b0; font-size: .72rem; }
 .goal-grid { display: grid; gap: 8px; margin-top: 15px; }
 .goal { display: grid; grid-template-columns: 34px 1fr 30px; align-items: center; gap: 9px; padding: 7px; border-radius: 10px; background: #0b2831; }
-.goal-number { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 8px; background: var(--goal-color); color: white; font-size: .8rem; font-weight: 900; }
+.goal-number { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 8px; background: var(--goal-color); color: var(--goal-ink); font-size: .8rem; font-weight: 900; }
 .goal small { display: block; margin-bottom: 5px; color: #c0d3cf; }
 .goal > strong { text-align: right; font-size: .85rem; }
 .meter { height: 5px; overflow: hidden; border-radius: 5px; background: #193a42; }
@@ -113,6 +129,12 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .history ol { margin: 0; padding-left: 20px; }
 .history li { margin: 8px 0; color: #d7e5e2; font-size: .82rem; line-height: 1.5; }
 .history li span { display: block; color: #739994; font-size: .7rem; }
+.glossary { margin-top: 20px; border-top: 1px solid #24454c; color: #b9ceca; }
+.glossary summary { padding-top: 18px; color: #9fd9cd; font-weight: 800; cursor: pointer; }
+.glossary dl { margin-bottom: 0; }
+.glossary dl > div { margin-top: 12px; }
+.glossary dt { color: #fff; font-size: .82rem; font-weight: 800; }
+.glossary dd { margin: 3px 0 0; color: #8caaa6; font-size: .76rem; line-height: 1.55; }
 
 .prologue-page { display: grid; min-height: 100vh; place-items: center; }
 .prologue { display: grid; grid-template-columns: minmax(300px, .85fr) minmax(420px, 1.15fr); width: min(1180px, 100%); overflow: hidden; border: 1px solid #31545c; border-radius: 28px; background: #0a242d; box-shadow: 0 35px 100px rgba(0,0,0,.38); }
@@ -158,6 +180,7 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .action-card { min-height: 108px; }
   .goals-panel { padding: 18px; }
   .impact-grid { grid-template-columns: 1fr; }
+  .voices { grid-template-columns: 1fr; }
   .ending-summary { grid-template-columns: 1fr; }
   .ending-summary > div { min-height: 88px; }
   .prologue-page { padding: 14px; }
