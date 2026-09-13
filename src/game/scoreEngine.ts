@@ -18,6 +18,12 @@ export const createInitialState = (): GameState => ({
 export const quarterlyRevenue = (economy: number) =>
   clamp(3 + Math.round((economy - 50) / 15), 2, 5);
 
+// 体験期間が延びても、以前の最終地点から続きを遊べるようにする。
+export const alignProgress = (state: GameState, totalTurns: number): GameState => ({
+  ...state,
+  completed: state.turnIndex >= totalTurns,
+});
+
 export const applyAction = (
   state: GameState,
   action: Action,

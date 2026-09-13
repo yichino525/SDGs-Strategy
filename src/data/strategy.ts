@@ -5,6 +5,10 @@ export const delayed: Record<string, { title: string; effects: Effects }> = {
   "child-support": { title: "放課後の居場所に、子どもたちが集まり始めた", effects: { trust: 2, goals: { 4: 3 } } },
   "clean-energy": { title: "公共施設の発電が軌道に。電気代の節約を地域へ", effects: { budget: 4, goals: { 7: 3 } } },
   "local-business": { title: "商店街に新しい求人。設備投資が実を結ぶ", effects: { economy: 3, goals: { 8: 2 } } },
+  "innovation-fund": { title: "若者の実験から、小さな仕事が生まれた", effects: { economy: 2, trust: 1, goals: { 8: 2, 9: 2 } } },
+  "reserve-fund": { title: "備えていた予備費が、防災準備を支えた", effects: { budget: 3, trust: 1, goals: { 11: 2 } } },
+  "inclusive-evacuation": { title: "顔の見える避難訓練が地域に根づいた", effects: { trust: 2, goals: { 3: 2, 10: 2 } } },
+  "shared-workshop": { title: "共同工房の試作品が地域の商品になった", effects: { economy: 3, goals: { 8: 2, 12: 2 } } },
 };
 
 export const chains = [
@@ -12,6 +16,10 @@ export const chains = [
   { requires: "clean-energy", action: "job-training", title: "発電 × 学び直し", text: "発電設備を保守できる人が育ち、地域の仕事につながりました。", effects: { economy: 4, goals: { 8: 4 } } },
   { requires: "local-business", action: "automation", title: "設備投資 × 自動化", text: "企業の生産性が向上。ただし技能の差も広がっています。", effects: { economy: 5, goals: { 9: 4, 10: -2 } } },
   { requires: "walking-city", action: "green-roofs", title: "歩くまち × 木陰", text: "歩道に木陰がつながり、夏にも歩きやすい通学路になりました。", effects: { trust: 3, goals: { 3: 4, 11: 3 } } },
+  { requires: "local-business", action: "shared-workshop", title: "地域企業 × 共同工房", text: "商店街の設備と職人の知恵が、若い作り手の仕事につながりました。", effects: { economy: 4, trust: 2, goals: { 8: 3, 9: 3 } } },
+  { requires: "water-renewal", action: "drainage-upgrade", title: "水道更新 × 浸水対策", text: "地下設備の記録を生かし、工事の重なりと費用を抑えられました。", effects: { budget: 3, goals: { 6: 2, 11: 3 } } },
+  { requires: "child-support", action: "community-kitchen", title: "子ども支援 × みんなの食堂", text: "支援につながった家庭が、安心して相談できる場所も見つけました。", effects: { trust: 3, goals: { 1: 3, 2: 2, 10: 2 } } },
+  { requires: "green-roofs", action: "slow-tourism", title: "まちの緑 × 地域を巡る旅", text: "育てた緑が地域の魅力となり、環境を守る仕事が生まれました。", effects: { economy: 2, goals: { 8: 2, 15: 3 } } },
 ];
 
 export const advisers = [
@@ -19,6 +27,11 @@ export const advisers = [
   { name: "森 健太", role: "商店主", quote: "道がつながれば、人もつながる。誰がどこへ行けるかを考えてみませんか。" },
   { name: "田中 美咲", role: "職業相談員", quote: "新しい技術の隣に、学ぶ機会も。これまでの投資を仕事につなげましょう。" },
   { name: "佐藤 凪", role: "地域の高校生", quote: "夏の通学路がもっと涼しかったら。今までの政策を生かせないかな。" },
+  { name: "中村 亮", role: "財政担当職員", quote: "新しい事業だけが前進ではありません。守る費用と、もしもの備えも選択です。" },
+  { name: "金城 ソフィア", role: "地域の防災リーダー", quote: "同じ案内を出すだけでは届かない人がいます。誰が誰を支えるかまで考えましょう。" },
+  { name: "山本 つむぎ", role: "商店街の建築士", quote: "空いた建物は、終わりではなく余白です。誰が使い続けられる場所にしますか。" },
+  { name: "伊藤 海", role: "地域案内人", quote: "人が来る数だけでなく、まちに何が残るのかを一緒に考えたいです。" },
+  { name: "小林 さくら", role: "市民会議の参加者", quote: "早く決めることも大切。でも、決め方そのものが未来の信頼を作ると思います。" },
 ];
 
 export type ImplementationOption = {
@@ -96,6 +109,21 @@ export const cityMemories: Record<string, { icon: string; label: string; detail:
   "cool-shelters": { icon: "涼", label: "まちの休憩所", detail: "暑い日にも安心して休める場所が増えた", kind: "people" },
   "water-renewal": { icon: "水", label: "新しい水道管", detail: "見えない場所で安全な水を支えている", kind: "industry" },
   "green-roofs": { icon: "緑", label: "木陰と屋上庭園", detail: "通学路と屋根に緑が増えた", kind: "green" },
+  "maintain-services": { icon: "守", label: "守られた公共施設", detail: "図書館と相談窓口の安心が続いている", kind: "people" },
+  "innovation-fund": { icon: "創", label: "若者の実験拠点", detail: "空き店舗で新しい挑戦が始まった", kind: "industry" },
+  "reserve-fund": { icon: "備", label: "危機への予備費", detail: "見えない備えが次の判断を支える", kind: "people" },
+  "inclusive-evacuation": { icon: "助", label: "支え合う避難地図", detail: "助けが必要な人と地域がつながった", kind: "people" },
+  "drainage-upgrade": { icon: "雨", label: "雨に備える排水路", detail: "浸水しやすい地区で地下工事が進んだ", kind: "industry" },
+  "evacuation-app": { icon: "報", label: "新しい防災情報", detail: "避難所と川の状況が早く届く", kind: "industry" },
+  "community-kitchen": { icon: "食", label: "みんなの食堂", detail: "食卓から相談とつながりが生まれた", kind: "people" },
+  "shared-workshop": { icon: "工", label: "共同ものづくり工房", detail: "職人と若者が同じ道具を使っている", kind: "industry" },
+  "temporary-market": { icon: "市", label: "週末の小さな市場", detail: "空き店舗の前に地域の商品が並ぶ", kind: "industry" },
+  "mass-tourism": { icon: "客", label: "にぎわう大きな祭り", detail: "売上とともに混雑やごみも増えた", kind: "industry" },
+  "slow-tourism": { icon: "旅", label: "地域を巡る小さな旅", detail: "暮らしと自然をゆっくり伝えている", kind: "green" },
+  "resident-first": { icon: "整", label: "整えられた祭りの道", detail: "歩道とごみの回収場所が使いやすくなった", kind: "mobility" },
+  "citizen-assembly": { icon: "話", label: "市民が囲む未来地図", detail: "異なる立場から次の計画を話し合った", kind: "people" },
+  "visible-projects": { icon: "場", label: "駅前の新しい広場", detail: "目に見える変化と地域差が残った", kind: "industry" },
+  "neighborhood-grants": { icon: "輪", label: "地区ごとの小さな挑戦", detail: "地域が自分たちで使い道を決めた", kind: "people" },
 };
 
 export const endingProfiles = [
@@ -103,19 +131,19 @@ export const endingProfiles = [
     id: "inclusive",
     title: "手を取り合う、やさしいまち",
     text: "人の暮らしに近い場所へ力を注いだあなた。便利さだけでなく、取り残される人がいない未来を選びました。",
-    actionIds: ["child-support", "community-bus", "work-balance", "cool-shelters"],
+    actionIds: ["child-support", "community-bus", "work-balance", "cool-shelters", "maintain-services", "inclusive-evacuation", "community-kitchen", "citizen-assembly", "neighborhood-grants"],
   },
   {
     id: "innovative",
     title: "技術で未来をひらくまち",
     text: "新しい設備や技術へ思い切って投資したあなた。変化の速さと、その恩恵をどう分かち合うかが次の課題です。",
-    actionIds: ["clean-energy", "road-investment", "automation", "water-renewal"],
+    actionIds: ["clean-energy", "road-investment", "automation", "water-renewal", "innovation-fund", "drainage-upgrade", "evacuation-app", "mass-tourism", "visible-projects"],
   },
   {
     id: "resilient",
     title: "地域の力で育つまち",
     text: "地域の仕事、学び、歩ける環境を結んだあなた。小さな力が積み重なり、変化にしなやかなまちが生まれました。",
-    actionIds: ["local-business", "walking-city", "job-training", "green-roofs"],
+    actionIds: ["local-business", "walking-city", "job-training", "green-roofs", "reserve-fund", "shared-workshop", "temporary-market", "slow-tourism", "resident-first"],
   },
 ] as const;
 

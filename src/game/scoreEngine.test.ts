@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { turns } from "../data/turns";
-import { applyAction, averageGoalScore, clamp, createInitialState, quarterlyRevenue } from "./scoreEngine";
+import { alignProgress, applyAction, averageGoalScore, clamp, createInitialState, quarterlyRevenue } from "./scoreEngine";
 
 describe("score engine", () => {
   it("keeps values within 0 and 100", () => {
@@ -21,17 +21,29 @@ describe("score engine", () => {
     expect(next.history).toHaveLength(1);
   });
 
-  it("completes after the fourth turn", () => {
+  it("第1章の全9ターンを完走する", () => {
     let state = createInitialState();
     turns.forEach((turn) => {
-      state = applyAction(state, turn.actions[0], turn.label, turns.length);
+      const action = turn.actions.find(
+        (candidate) => state.resources.budget + (candidate.effects.budget ?? 0) >= 0,
+      );
+      expect(action).toBeDefined();
+      state = applyAction(state, action!, turn.label, turns.length);
     });
     expect(state.completed).toBe(true);
-    expect(state.turnIndex).toBe(4);
+    expect(state.turnIndex).toBe(9);
   });
 
   it("starts with an average SDGs score of 50", () => {
     expect(averageGoalScore(createInitialState())).toBe(50);
+  });
+
+  it("旧4ターン版の完了セーブを第5ターンから再開できる", () => {
+    const saved = { ...createInitialState(), turnIndex: 4, completed: true };
+    const resumed = alignProgress(saved, turns.length);
+
+    expect(resumed.turnIndex).toBe(4);
+    expect(resumed.completed).toBe(false);
   });
 
   it("lets the economy change quarterly city revenue", () => {

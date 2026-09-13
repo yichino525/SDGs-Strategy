@@ -4,7 +4,7 @@ import { turns } from "./data/turns";
 import { advisers, chains, cityMemories, delayed, implementationPlans } from "./data/strategy";
 import type { ImplementationOption } from "./data/strategy";
 import { buildEnding } from "./game/endingEngine";
-import { applyAction, averageGoalScore, createInitialState } from "./game/scoreEngine";
+import { alignProgress, applyAction, averageGoalScore, createInitialState } from "./game/scoreEngine";
 import { clearSave, loadGame, saveGame } from "./game/storage";
 import type { Action, Effects, GameState } from "./game/types";
 
@@ -25,12 +25,16 @@ const goalPreview = (effects: Effects) => Object.entries(effects.goals)
   .join("・");
 
 function App() {
-  const [state, setState] = useState<GameState>(() => loadGame() ?? createInitialState());
+  const [state, setState] = useState<GameState>(() => {
+    const saved = loadGame();
+    return saved ? alignProgress(saved, turns.length) : createInitialState();
+  });
   const [showPrologue, setShowPrologue] = useState(state.history.length === 0);
   const [pendingAction, setPendingAction] = useState<Action | null>(null);
   const lastAction = state.report;
   const [notice, setNotice] = useState("選択は自動的に保存されます");
   const currentTurn = turns[state.turnIndex];
+  const activeTurn = currentTurn ?? turns.at(-1);
   const average = useMemo(() => averageGoalScore(state), [state]);
   const lowest = useMemo(() => Math.min(...Object.values(state.goals)), [state]);
   const ending = useMemo(() => buildEnding(state, goals), [state]);
@@ -130,7 +134,7 @@ function App() {
           <p className="lead">架空都市「みらい市」で、限られた予算と17のゴールに向き合うゲームです。</p>
         </div>
         <div className="turn-badge" aria-label={`進行 ${Math.min(state.turnIndex + 1, turns.length)} / ${turns.length}`}>
-          <span>プロトタイプ</span>
+          <span>{activeTurn?.chapter ?? "第1章"}</span>
           <strong>{Math.min(state.turnIndex + 1, turns.length)} / {turns.length}</strong>
         </div>
       </header>
@@ -197,7 +201,7 @@ function App() {
               </div>
               <p className="result-note">良くなった数字だけでなく、負担や後回しになった課題も次の判断につながります。</p>
               <button className="primary-button wide" onClick={continueGame}>
-                {state.completed ? "4ターンの結果を見る" : "次の四半期へ進む"} →
+                {state.completed ? "第1章の結果を見る" : "次の四半期へ進む"} →
               </button>
             </div>
           ) : pendingAction && implementationPlan ? (
@@ -227,7 +231,8 @@ function App() {
             </div>
           ) : !state.completed && currentTurn ? (
             <div className="decision-panel">
-              <div className="turn-heading"><p className="turn-label">{currentTurn.label}</p><span>選択 {state.turnIndex + 1} / {turns.length}</span></div>
+              <div className="turn-heading"><div><p className="turn-label">{currentTurn.label}</p><span className="decision-type">{currentTurn.decisionType}</span></div><span>選択 {state.turnIndex + 1} / {turns.length}</span></div>
+              <p className="chapter-progress">{currentTurn.chapter}</p>
               <h2>{currentTurn.headline}</h2>
               <p>{currentTurn.context}</p>
               <div className="scenario-note">
@@ -258,7 +263,7 @@ function App() {
             </div>
           ) : (
             <div className="decision-panel ending">
-              <p className="turn-label">4ターン体験版 完了</p>
+              <p className="turn-label">第1章「理想と現実」完了 · 2017年末</p>
               <h2>{ending.profile.title}</h2>
               <p>{ending.profile.text}</p>
               <p>SDGs平均は <strong>{average}</strong>、残り予算は <strong>{state.resources.budget}</strong> です。どの選択にも、得られたものと後回しになったものがあります。</p>

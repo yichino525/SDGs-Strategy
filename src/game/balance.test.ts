@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chains, cityMemories, delayed, implementationPlans } from "../data/strategy";
+import { advisers, chains, cityMemories, delayed, implementationPlans } from "../data/strategy";
 import { turns } from "../data/turns";
 import { applyAction, averageGoalScore, createInitialState } from "./scoreEngine";
 import type { Action, GameState } from "./types";
@@ -32,7 +32,10 @@ describe("全ルートのバランス", () => {
       const affordable = variants.filter(
         (action) => state.resources.budget + (action.effects.budget ?? 0) >= 0,
       );
-      expect(affordable.length).toBeGreaterThan(0);
+      expect(
+        affordable.length,
+        `${turns[turnIndex].id}: 予算${state.resources.budget}で選べる政策がありません（${state.history.map((entry) => entry.actionId).join(" → ")}）`,
+      ).toBeGreaterThan(0);
       if (affordable.length < variants.length) constrainedTurns += 1;
 
       for (const action of affordable) {
@@ -62,5 +65,8 @@ describe("全ルートのバランス", () => {
       expect(ids).toContain(chain.requires);
       expect(ids).toContain(chain.action);
     }
+    expect(advisers).toHaveLength(turns.length);
+    expect(new Set(turns.map((turn) => turn.decisionType)).size).toBeGreaterThanOrEqual(4);
+    expect(turns.at(-1)?.id).toBe("2017-q4");
   });
 });
