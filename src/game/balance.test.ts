@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { advisers, chains, cityMemories, delayed, implementationPlans } from "../data/strategy";
+import { chapterBreaks, pledges, turnSignals } from "../data/story";
 import { turns } from "../data/turns";
 import { applyAction, averageGoalScore, createInitialState } from "./scoreEngine";
 import type { Action, GameState } from "./types";
@@ -71,6 +72,10 @@ describe("長編ルートのバランス", () => {
       expect(ids).toContain(chain.action);
     }
     expect(advisers).toHaveLength(turns.length);
+    expect(Object.keys(turnSignals)).toHaveLength(turns.length);
+    for (const turn of turns) expect(turnSignals[turn.id]).toBeDefined();
+    expect(pledges.map((pledge) => pledge.id)).toEqual(["inclusive", "innovative", "resilient"]);
+    expect(Object.keys(chapterBreaks).map(Number)).toEqual([9, 17]);
     expect(new Set(turns.map((turn) => turn.decisionType)).size).toBeGreaterThanOrEqual(4);
     expect(turns.at(-1)?.id).toBe("2019-q4");
     for (const turn of turns.slice(9)) {

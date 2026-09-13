@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { goals } from "./data/goals";
+import { chapterBreaks, pledges, turnSignals } from "./data/story";
 import { turns } from "./data/turns";
 import { advisers, chains, cityMemories, delayed, implementationPlans } from "./data/strategy";
 import type { ImplementationOption } from "./data/strategy";
 import { buildEnding } from "./game/endingEngine";
 import { alignProgress, applyAction, averageGoalScore, createInitialState } from "./game/scoreEngine";
 import { clearSave, loadGame, saveGame } from "./game/storage";
-import type { Action, Effects, GameState } from "./game/types";
+import { buildWitnessReaction, pledgeProgress } from "./game/storyEngine";
+import type { Action, Effects, GameState, PledgeId } from "./game/types";
 
 const ResourceCard = ({ label, value, icon }: { label: string; value: number; icon: string }) => (
   <div className="resource-card">
@@ -40,6 +42,11 @@ function App() {
   const average = useMemo(() => averageGoalScore(state), [state]);
   const lowest = useMemo(() => Math.min(...Object.values(state.goals)), [state]);
   const ending = useMemo(() => buildEnding(state, goals), [state]);
+  const promiseProgress = useMemo(() => pledgeProgress(state), [state]);
+  const pledge = pledges.find((candidate) => candidate.id === state.pledge);
+  const signal = currentTurn ? turnSignals[currentTurn.id] : undefined;
+  const witness = lastAction ? buildWitnessReaction(lastAction.effects, Math.max(0, state.turnIndex - 1)) : undefined;
+  const chapterBreak = lastAction ? chapterBreaks[state.turnIndex] : undefined;
   const implementationPlan = pendingAction ? implementationPlans[pendingAction.id] : undefined;
   const memories = useMemo(() => state.history.flatMap((entry) => cityMemories[entry.actionId] ? [cityMemories[entry.actionId]] : []), [state.history]);
   const sceneKinds = useMemo(() => new Set(memories.map((memory) => memory.kind)), [memories]);
@@ -98,6 +105,12 @@ function App() {
     requestAnimationFrame(() => window.scrollTo({ top: 0 }));
   };
 
+  const choosePledge = (pledgeId: PledgeId) => {
+    setState((previous) => ({ ...previous, pledge: pledgeId }));
+    setNotice("市長の公約を記録しました");
+    requestAnimationFrame(() => window.scrollTo({ top: 0 }));
+  };
+
   const formatDelta = (value: number) => `${value > 0 ? "+" : ""}${value}`;
 
   if (showPrologue) {
@@ -127,6 +140,29 @@ function App() {
     );
   }
 
+  if (!state.pledge) {
+    return (
+      <main className="pledge-page">
+        <section className="pledge-intro">
+          <p className="chapter-label">YOUR PROMISE · 市長の公約</p>
+          <h1>{state.history.length ? "これからの市政で、何を約束しますか？" : "最初に、市民へ一つ約束してください。"}</h1>
+          <p>{state.history.length ? "これまでの選択はそのまま残ります。ここから先、どの価値を大切にするかを市民へ伝えます。" : "公約に絶対の正解はありません。何を優先し、どんな負担を引き受けるかが、あなたの物語になります。"}</p>
+          <div className="pledge-options">
+            {pledges.map((option, index) => <button key={option.id} className="pledge-card" onClick={() => choosePledge(option.id)}>
+              <span>公約 {String.fromCharCode(65 + index)}</span>
+              <strong>{option.title}</strong>
+              <p>{option.statement}</p>
+              <small>重視：{option.focus}</small>
+              <em>向き合う負担：{option.cost}</em>
+              <b>この公約を掲げる →</b>
+            </button>)}
+          </div>
+          <p className="pledge-note">公約は能力アップではなく、章末に振り返る「市民との約束」です。</p>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main>
       <header className="hero">
@@ -146,6 +182,12 @@ function App() {
         <ResourceCard label="経済" value={state.resources.economy} icon="↗" />
         <ResourceCard label="社会的信頼" value={state.resources.trust} icon="◎" />
         <ResourceCard label="SDGs平均" value={average} icon="17" />
+      </section>
+
+      <section className="promise-strip" aria-label="市長の公約">
+        <div><span>YOUR PROMISE</span><strong>{pledge?.title}</strong></div>
+        <p>{promiseProgress.total ? `${promiseProgress.aligned} / ${promiseProgress.total}回の選択が公約の方向と重なっています` : "最初の選択を、市民が見守っています"}</p>
+        <div className="promise-meter" role="progressbar" aria-label="公約との一致" aria-valuemin={0} aria-valuemax={100} aria-valuenow={promiseProgress.percent}><span style={{ width: `${promiseProgress.percent}%` }} /></div>
       </section>
 
       <div className="game-layout">
@@ -187,6 +229,13 @@ function App() {
                 <h3>{lastAction.stories.length ? "現場から、変化の声が届いた。" : "新しい方針、地域で動き出す"}</h3>
                 {lastAction.stories.length ? lastAction.stories.map(story => <p key={story}>{story}</p>) : <p>「{lastAction.title}」が決まりました。住民たちは、これからの変化を見守っています。</p>}
               </article>
+              {witness && <article className="witness-reaction">
+                <div className="witness-mark" aria-hidden="true">{witness.name.slice(0, 1)}</div>
+                <div><span>その夜、市長へ届いた声</span><strong>{witness.name} · {witness.role}</strong><blockquote>「{witness.reaction}」</blockquote></div>
+              </article>}
+              {chapterBreak && <article className="chapter-cliffhanger">
+                <span>CHAPTER TURNING POINT</span><h3>{chapterBreak.title}</h3><p>{chapterBreak.text}</p><strong>{chapterBreak.next}</strong>
+              </article>}
               <h3>変化したもの</h3>
               <div className="impact-grid">
                 {(["budget", "economy", "trust"] as const).map((key) => {
@@ -238,6 +287,7 @@ function App() {
               <p className="chapter-progress">{currentTurn.chapter}</p>
               <h2>{currentTurn.headline}</h2>
               <p>{currentTurn.context}</p>
+              {signal && <div className={`turn-signal signal-${signal.level}`}><span>まちの気配 · {signal.label}</span><p>{signal.text}</p></div>}
               <div className="scenario-note">
                 <strong>{currentTurn.scenarioKind === "historical-frame" ? "史実を背景にした仮想シナリオ" : "ゲーム用の仮想シナリオ"}</strong>
                 <span>政策効果の数値は、現実の予測ではなくゲーム上の仮定です。</span>
@@ -276,6 +326,7 @@ function App() {
                 <div><span>見つけた政策連鎖</span><strong>{ending.triggeredChains.length} / {chains.length}</strong><b>✦</b></div>
               </div>
               {ending.triggeredChains.length > 0 && <p className="ending-chains">発見：{ending.triggeredChains.map((chain) => chain.title).join("、")}</p>}
+              <div className="promise-result"><span>市民との公約</span><strong>{pledge?.title}</strong><p>{promiseProgress.aligned} / {promiseProgress.total}回の選択が、公約の方向と重なりました。数字だけでなく、選ばなかった理由も市民への説明になります。</p></div>
               <button className="primary-button" onClick={restart}>もう一度プレイする</button>
             </div>
           )}

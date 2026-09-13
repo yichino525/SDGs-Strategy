@@ -41,6 +41,14 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .resource-card small, .resource-card strong { display: block; }
 .resource-card small { color: #89aaa7; }
 .resource-card strong { color: #fff; font-size: 1.65rem; line-height: 1; }
+.promise-strip { display: grid; grid-template-columns: minmax(220px, .75fr) minmax(260px, 1fr); gap: 6px 24px; align-items: center; margin: 0 0 18px; padding: 14px 18px; border: 1px solid #7a6336; border-radius: 14px; background: linear-gradient(100deg, #3a2a13, #12363c); }
+.promise-strip > div:first-child { grid-row: 1 / 3; }
+.promise-strip span, .promise-strip strong { display: block; }
+.promise-strip span { color: #f2c66d; font-size: .65rem; font-weight: 900; letter-spacing: .14em; }
+.promise-strip strong { margin-top: 4px; color: #fff3d1; }
+.promise-strip p { margin: 0; color: #c4d8d3; font-size: .76rem; }
+.promise-meter { height: 6px; overflow: hidden; border-radius: 999px; background: #0b242b; }
+.promise-meter span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #f0bd5b, #72d9c2); transition: width .4s ease; }
 
 .game-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(340px, .75fr); gap: 18px; align-items: start; }
 .scene-card, .goals-panel { overflow: hidden; border: 1px solid #24454c; border-radius: 24px; background: rgba(8, 30, 38, .9); box-shadow: 0 20px 60px rgba(0,0,0,.22); }
@@ -85,6 +93,11 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .scenario-note strong { color: #f0c274; }
 .scenario-note span { color: #9dbab5; }
 .scenario-note a { color: #8debd5; }
+.turn-signal { margin: 16px 0 0; padding: 14px 15px; border: 1px solid #3c6066; border-left: 5px solid #72d9c2; border-radius: 11px; background: #0b2932; }
+.turn-signal span { color: #a9dcd2; font-size: .72rem; font-weight: 900; letter-spacing: .04em; }
+.turn-signal p { margin: 5px 0 0; color: #e2eeeb; font-size: .86rem; line-height: 1.6; }
+.turn-signal.signal-rising { border-left-color: #f0c274; background: #302817; }
+.turn-signal.signal-urgent { border-left-color: #ff8b78; background: #34201f; }
 .actions { display: grid; gap: 10px; margin-top: 24px; }
 .voices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0 6px; }
 .voices blockquote { margin: 0; padding: 13px; border: 1px solid #315760; border-radius: 11px; background: #102e37; }
@@ -138,6 +151,22 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .impact.negative { border-left: 3px solid #ff8b78; }
 .impact.negative strong { color: #ff9b89; }
 .result-note { font-size: .8rem; }
+.witness-reaction { display: grid; grid-template-columns: 48px 1fr; gap: 14px; margin: 0 0 24px; padding: 17px; border: 1px solid #3a646b; border-radius: 14px; background: #102f38; }
+.witness-mark { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 50%; background: #f0c274; color: #17282c; font-family: Georgia, "Yu Mincho", serif; font-size: 1.3rem; font-weight: 900; }
+.witness-reaction span, .witness-reaction strong { display: block; }
+.witness-reaction span { color: #82aaa5; font-size: .68rem; font-weight: 800; letter-spacing: .06em; }
+.witness-reaction strong { margin-top: 3px; color: #fff; font-size: .86rem; }
+.witness-reaction blockquote { margin: 8px 0 0; color: #dceae7; font-family: Georgia, "Yu Mincho", serif; font-size: 1rem; line-height: 1.75; }
+.chapter-cliffhanger { margin: 2px 0 25px; padding: 22px; border: 1px solid #b88d45; border-radius: 14px; background: radial-gradient(circle at 100% 0%, #69452d, #1d2930 60%); }
+.chapter-cliffhanger > span { color: #f0c274; font-size: .67rem; font-weight: 900; letter-spacing: .15em; }
+.chapter-cliffhanger h3 { margin: 9px 0 !important; color: #fff4d6 !important; font-family: Georgia, "Yu Mincho", serif; font-size: 1.35rem !important; line-height: 1.45; }
+.chapter-cliffhanger p { color: #d7dfdc; line-height: 1.7; }
+.chapter-cliffhanger strong { color: #8debd5; }
+.promise-result { margin: 14px 0 4px; padding: 16px; border: 1px solid #8c713d; border-radius: 12px; background: #302718; }
+.promise-result span, .promise-result strong { display: block; }
+.promise-result span { color: #f0c274; font-size: .7rem; font-weight: 900; }
+.promise-result strong { margin-top: 4px; color: #fff3cf; }
+.promise-result p { margin: 8px 0 0; color: #d7d7c7; font-size: .8rem; line-height: 1.6; }
 
 .goals-panel { padding: 24px; }
 .section-heading { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
@@ -185,12 +214,29 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .start-button strong { font-size: 1rem; }
 .start-button:hover { background: #91edd8; transform: translateY(-2px); }
 
+.pledge-page { display: grid; min-height: 100vh; place-items: center; }
+.pledge-intro { width: min(1100px, 100%); padding: clamp(24px, 5vw, 60px); border: 1px solid #31545c; border-radius: 26px; background: radial-gradient(circle at 85% 0%, #244b4a, #0a242d 45%); box-shadow: 0 30px 90px rgba(0,0,0,.32); }
+.pledge-intro > h1 { max-width: 900px; margin: 10px 0 16px; font-size: clamp(2rem, 4vw, 4rem); line-height: 1.15; }
+.pledge-intro > p { max-width: 800px; color: #bfd1ce; line-height: 1.75; }
+.pledge-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 28px; }
+.pledge-card { display: flex; flex-direction: column; gap: 9px; min-height: 330px; padding: 22px; border: 1px solid #477078; border-top: 5px solid #f0c274; border-radius: 16px; background: linear-gradient(160deg, #153943, #0a2730); color: inherit; text-align: left; cursor: pointer; transition: transform .18s, border-color .18s; }
+.pledge-card:hover { transform: translateY(-5px); border-color: #ffe099; }
+.pledge-card > span { color: #f0c274; font-size: .68rem; font-weight: 900; letter-spacing: .12em; }
+.pledge-card > strong { color: #fff; font-family: Georgia, "Yu Mincho", serif; font-size: 1.35rem; line-height: 1.4; }
+.pledge-card > p { color: #c5d8d4; line-height: 1.65; }
+.pledge-card > small { color: #8debd5; line-height: 1.5; }
+.pledge-card > em { color: #b7aaa0; font-size: .75rem; font-style: normal; line-height: 1.55; }
+.pledge-card > b { margin-top: auto; color: #ffe099; font-size: .82rem; }
+.pledge-note { margin-bottom: 0; font-size: .78rem; }
+
 @media (max-width: 900px) {
   .dashboard { grid-template-columns: repeat(2, 1fr); }
   .game-layout { grid-template-columns: 1fr; }
   .goals-panel { order: 2; }
   .prologue { grid-template-columns: 1fr; }
   .prologue-art { min-height: 340px; }
+  .pledge-options { grid-template-columns: 1fr; }
+  .pledge-card { min-height: 0; }
 }
 
 @media (max-width: 560px) {
@@ -199,6 +245,8 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .turn-badge { min-width: 92px; padding: 11px; }
   .lead { font-size: .9rem; }
   .dashboard { gap: 8px; }
+  .promise-strip { grid-template-columns: 1fr; }
+  .promise-strip > div:first-child { grid-row: auto; }
   .resource-card { padding: 11px; gap: 8px; }
   .resource-card > span { width: 32px; height: 32px; }
   .city-scene { min-height: 220px; }
@@ -216,4 +264,8 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .prologue-copy { padding: 28px 22px; }
   .prologue h1 { font-size: 2rem; }
   .story-text { font-size: .9rem; line-height: 1.75; }
+  .pledge-page { padding: 14px; }
+  .pledge-intro { padding: 28px 20px; border-radius: 20px; }
+  .witness-reaction { grid-template-columns: 38px 1fr; padding: 14px; }
+  .witness-mark { width: 38px; height: 38px; }
 }

@@ -19,6 +19,7 @@ const hasValidCoreState = (value: unknown): value is GameState => {
   if (!isRecord(value) || value.version !== 1 || !Number.isInteger(value.turnIndex)) return false;
   if ((value.turnIndex as number) < 0 || (value.turnIndex as number) > 61) return false;
   if (typeof value.completed !== "boolean" || !Array.isArray(value.history)) return false;
+  if (value.pledge !== undefined && !["inclusive", "innovative", "resilient"].includes(value.pledge as string)) return false;
   if (!value.history.every((entry) => isRecord(entry) && typeof entry.turnId === "string" && typeof entry.actionId === "string" && typeof entry.actionTitle === "string" && typeof entry.turnLabel === "string")) return false;
   if (!isRecord(value.resources) || ![value.resources.budget, value.resources.economy, value.resources.trust].every(isScore)) return false;
   if (!isRecord(value.goals)) return false;

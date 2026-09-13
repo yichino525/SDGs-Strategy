@@ -1,4 +1,5 @@
 export type GoalId = number;
+export type PledgeId = "inclusive" | "innovative" | "resilient";
 
 export type Goal = {
   id: GoalId;
@@ -51,6 +52,7 @@ export type GameState = {
   report?: { title: string; stories: string[]; effects: Effects; income?: number };
   pending?: { due: number; title: string; effects: Effects }[];
   version: 1;
+  pledge?: PledgeId;
   turnIndex: number;
   goals: Record<GoalId, number>;
   resources: Resources;

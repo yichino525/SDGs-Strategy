@@ -20,4 +20,9 @@ describe("セーブデータ検証", () => {
     delete state.goals[17];
     expect(parseGame(JSON.stringify(state))).toBeNull();
   });
+
+  it("公約の種類が壊れたセーブデータを読み込まない", () => {
+    const state = { ...createInitialState(), pledge: "unknown" };
+    expect(parseGame(JSON.stringify(state))).toBeNull();
+  });
 });
