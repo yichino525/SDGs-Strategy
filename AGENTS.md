@@ -156,6 +156,19 @@
 - 変更内容を短く説明できる
 - 未解決事項が明記されている
 
+## Skill: /expert-review
+
+`/expert-review` が入力された場合は、`docs/review-council/PROTOCOL.md`を読み、指定された対象を専門家評議会で点検する。
+
+- ゲームディレクター：`docs/review-council/game-director.md`
+- 経済学者：`docs/review-council/economist.md`
+- 民主的統治・政治実務家：`docs/review-council/democratic-governance.md`
+- 子ども体験責任者：`docs/review-council/child-experience.md`
+- シミュレーション設計者：`docs/review-council/simulation-designer.md`
+- 史実・倫理・アクセシビリティ責任者：`docs/review-council/fact-ethics-accessibility.md`
+
+レビューは読み取りと報告だけにする。コード変更、GitHub送信、公開、外部AI APIの呼び出しは、レビュー依頼だけを根拠に実行しない。
+
 ## 最初のプロトタイプ
 
 - 2015年第4四半期から2016年第3四半期までの4ターン
