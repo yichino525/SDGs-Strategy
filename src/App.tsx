@@ -34,7 +34,9 @@ function App() {
   const lastAction = state.report;
   const [notice, setNotice] = useState("選択は自動的に保存されます");
   const currentTurn = turns[state.turnIndex];
-  const activeTurn = currentTurn ?? turns.at(-1);
+  const activeTurn = state.report ? turns[Math.max(0, state.turnIndex - 1)] : (currentTurn ?? turns.at(-1));
+  const activeChapterNumber = activeTurn?.chapter.split(" ")[0] ?? "章";
+  const isChapterStart = Boolean(currentTurn && state.turnIndex > 0 && turns[state.turnIndex - 1]?.chapter !== currentTurn.chapter);
   const average = useMemo(() => averageGoalScore(state), [state]);
   const lowest = useMemo(() => Math.min(...Object.values(state.goals)), [state]);
   const ending = useMemo(() => buildEnding(state, goals), [state]);
@@ -201,7 +203,7 @@ function App() {
               </div>
               <p className="result-note">良くなった数字だけでなく、負担や後回しになった課題も次の判断につながります。</p>
               <button className="primary-button wide" onClick={continueGame}>
-                {state.completed ? "第1章の結果を見る" : "次の四半期へ進む"} →
+                {state.completed ? `${activeChapterNumber}の結果を見る` : "次の四半期へ進む"} →
               </button>
             </div>
           ) : pendingAction && implementationPlan ? (
@@ -231,6 +233,7 @@ function App() {
             </div>
           ) : !state.completed && currentTurn ? (
             <div className="decision-panel">
+              {isChapterStart && <div className="chapter-opening"><span>NEW CHAPTER</span><strong>{currentTurn.chapter}</strong><p>これまでの選択を引き継ぎ、次の時代へ進みます。</p></div>}
               <div className="turn-heading"><div><p className="turn-label">{currentTurn.label}</p><span className="decision-type">{currentTurn.decisionType}</span></div><span>選択 {state.turnIndex + 1} / {turns.length}</span></div>
               <p className="chapter-progress">{currentTurn.chapter}</p>
               <h2>{currentTurn.headline}</h2>
@@ -263,7 +266,7 @@ function App() {
             </div>
           ) : (
             <div className="decision-panel ending">
-              <p className="turn-label">第1章「理想と現実」完了 · 2017年末</p>
+              <p className="turn-label">{activeTurn?.chapter} 完了 · {activeTurn?.label}</p>
               <h2>{ending.profile.title}</h2>
               <p>{ending.profile.text}</p>
               <p>SDGs平均は <strong>{average}</strong>、残り予算は <strong>{state.resources.budget}</strong> です。どの選択にも、得られたものと後回しになったものがあります。</p>

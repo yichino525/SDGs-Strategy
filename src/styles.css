@@ -110,6 +110,10 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .turn-heading > div { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
 .decision-type { display: inline-flex; align-items: center; min-height: 26px; padding: 4px 9px; border: 1px solid #d5aa59; border-radius: 999px; background: #3a2a13; color: #ffe0a4; font-size: .7rem; font-weight: 900; }
 .chapter-progress { margin: -3px 0 12px !important; color: #72d9c2 !important; font-size: .78rem !important; font-weight: 800; letter-spacing: .04em; }
+.chapter-opening { display: grid; gap: 5px; margin: 0 0 20px; padding: 16px 18px; border: 1px solid #d5aa59; border-left: 5px solid #f2c66d; border-radius: 12px; background: linear-gradient(110deg, #3a2a13, #153b3e); }
+.chapter-opening span { color: #f2c66d; font-size: .68rem; font-weight: 900; letter-spacing: .16em; }
+.chapter-opening strong { color: #fff; font-family: Georgia, "Yu Mincho", serif; font-size: 1.25rem; }
+.chapter-opening p { margin: 0 !important; color: #d6ebe6 !important; font-size: .8rem !important; }
 .primary-button { align-self: start; margin-top: 14px; padding: 13px 19px; border: 0; border-radius: 12px; background: #72d9c2; color: #08242d; font-weight: 800; cursor: pointer; }
 .primary-button.wide { width: 100%; padding: 16px 20px; font-size: 1rem; }
 

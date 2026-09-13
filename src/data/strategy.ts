@@ -9,6 +9,13 @@ export const delayed: Record<string, { title: string; effects: Effects }> = {
   "reserve-fund": { title: "備えていた予備費が、防災準備を支えた", effects: { budget: 3, trust: 1, goals: { 11: 2 } } },
   "inclusive-evacuation": { title: "顔の見える避難訓練が地域に根づいた", effects: { trust: 2, goals: { 3: 2, 10: 2 } } },
   "shared-workshop": { title: "共同工房の試作品が地域の商品になった", effects: { economy: 3, goals: { 8: 2, 12: 2 } } },
+  "care-worker-pay": { title: "保育の現場に、経験ある職員が残り始めた", effects: { trust: 2, goals: { 3: 2, 5: 2, 8: 2 } } },
+  "container-deposit": { title: "返却された容器が、地域で再び使われた", effects: { economy: 1, goals: { 12: 3, 14: 2 } } },
+  "cool-school-retrofit": { title: "校舎の改修が完成し、少ない電力で涼しくなった", effects: { budget: 2, goals: { 3: 2, 7: 2, 13: 2 } } },
+  "open-city-data": { title: "公開データから、市民の新しい地図が生まれた", effects: { economy: 2, trust: 1, goals: { 9: 2, 17: 2 } } },
+  "home-care-workforce": { title: "育った介護職が、地域の訪問を支え始めた", effects: { trust: 2, goals: { 3: 3, 8: 2 } } },
+  "community-energy": { title: "地域発電の利益が、公共施設へ戻り始めた", effects: { budget: 3, economy: 2, goals: { 7: 2, 13: 2 } } },
+  "efficiency-retrofit": { title: "省エネ改修で、公共施設の電気代が下がった", effects: { budget: 3, goals: { 7: 2, 12: 2 } } },
 };
 
 export const chains = [
@@ -20,6 +27,14 @@ export const chains = [
   { requires: "water-renewal", action: "drainage-upgrade", title: "水道更新 × 浸水対策", text: "地下設備の記録を生かし、工事の重なりと費用を抑えられました。", effects: { budget: 3, goals: { 6: 2, 11: 3 } } },
   { requires: "child-support", action: "community-kitchen", title: "子ども支援 × みんなの食堂", text: "支援につながった家庭が、安心して相談できる場所も見つけました。", effects: { trust: 3, goals: { 1: 3, 2: 2, 10: 2 } } },
   { requires: "green-roofs", action: "slow-tourism", title: "まちの緑 × 地域を巡る旅", text: "育てた緑が地域の魅力となり、環境を守る仕事が生まれました。", effects: { economy: 2, goals: { 8: 2, 15: 3 } } },
+  { requires: "work-balance", action: "care-worker-pay", title: "働き方改善 × 保育の待遇", text: "先に働き方を見直した企業と保育施設が協力し、子育てと仕事を続けやすくなりました。", effects: { trust: 3, goals: { 5: 3, 8: 3 } } },
+  { requires: "community-kitchen", action: "neighborhood-childcare", title: "みんなの食堂 × 預かり合い", text: "食堂で生まれた信頼が、安心できる子育ての助け合いにつながりました。", effects: { trust: 3, goals: { 3: 2, 10: 3 } } },
+  { requires: "green-roofs", action: "cool-school-retrofit", title: "まちの緑 × 涼しい校舎", text: "木陰と校舎改修がつながり、通学路から教室まで暑さを避けられるようになりました。", effects: { goals: { 3: 3, 4: 2, 13: 3 } } },
+  { requires: "automation", action: "predictive-support", title: "自動化 × 支援予測", text: "地域で育った技術人材が支援システムを改善しましたが、説明責任の課題も大きくなりました。", effects: { economy: 3, trust: -1, goals: { 9: 3, 16: -1 } } },
+  { requires: "citizen-assembly", action: "privacy-audit", title: "市民会議 × 情報のルール", text: "市民会議の経験を生かし、専門家だけで決めない個人情報のルールが作られました。", effects: { trust: 4, goals: { 16: 4, 17: 2 } } },
+  { requires: "clean-energy", action: "community-energy", title: "公共発電 × 地域エネルギー", text: "公共施設で得た経験が住民の発電会社へ引き継がれ、地域の仕事が増えました。", effects: { economy: 4, goals: { 7: 3, 8: 3, 13: 2 } } },
+  { requires: "water-renewal", action: "efficiency-retrofit", title: "インフラ更新 × 省エネ改修", text: "地下と建物の工事記録を共有し、公共施設を効率よく改修できました。", effects: { budget: 2, economy: 2, goals: { 9: 3, 12: 2 } } },
+  { requires: "inclusive-evacuation", action: "intercultural-neighborhood", title: "避難のつながり × 多文化の地域", text: "避難地図づくりで生まれた関係が、言葉の違いを越えた防災活動へ広がりました。", effects: { trust: 4, goals: { 10: 3, 11: 3, 16: 2 } } },
 ];
 
 export const advisers = [
@@ -32,6 +47,14 @@ export const advisers = [
   { name: "山本 つむぎ", role: "商店街の建築士", quote: "空いた建物は、終わりではなく余白です。誰が使い続けられる場所にしますか。" },
   { name: "伊藤 海", role: "地域案内人", quote: "人が来る数だけでなく、まちに何が残るのかを一緒に考えたいです。" },
   { name: "小林 さくら", role: "市民会議の参加者", quote: "早く決めることも大切。でも、決め方そのものが未来の信頼を作ると思います。" },
+  { name: "松井 あかり", role: "保育施設の職員", quote: "建物だけでは保育は続きません。子どもを見る人が安心して働ける方法を考えてください。" },
+  { name: "橋本 蓮", role: "小さな商店の店主", quote: "ごみを減らしたい気持ちは同じです。小さな店でも参加できる速さと費用にしてください。" },
+  { name: "佐藤 凪", role: "地域の高校生", quote: "暑さを我慢することが勉強ではないはずです。今日の安全と未来の電気、両方を考えたいです。" },
+  { name: "藤田 真理", role: "情報公開の委員", quote: "便利だから集める、では足りません。誰が何のために使うのか説明できる仕組みが必要です。" },
+  { name: "鈴木 和夫", role: "家族の介護をする住民", quote: "助け合いはありがたい。でも、家族や近所の人だけが背負わない仕組みにしてほしいです。" },
+  { name: "岡田 ひかる", role: "地域電力の技術者", quote: "電気を替えるだけか、仕事と利益も地域に残すか。時間と費用を比べて決めましょう。" },
+  { name: "グエン ミン", role: "地域工場で働く住民", quote: "仕事の説明だけでなく、病院や学校、防災のことも分かれば、このまちで暮らしていけます。" },
+  { name: "金城 ソフィア", role: "地域の防災リーダー", quote: "備えは使わない日には見えません。それでも、つながりと物資の両方を残す意味があります。" },
 ];
 
 export type ImplementationOption = {
@@ -124,6 +147,30 @@ export const cityMemories: Record<string, { icon: string; label: string; detail:
   "citizen-assembly": { icon: "話", label: "市民が囲む未来地図", detail: "異なる立場から次の計画を話し合った", kind: "people" },
   "visible-projects": { icon: "場", label: "駅前の新しい広場", detail: "目に見える変化と地域差が残った", kind: "industry" },
   "neighborhood-grants": { icon: "輪", label: "地区ごとの小さな挑戦", detail: "地域が自分たちで使い道を決めた", kind: "people" },
+  "care-worker-pay": { icon: "育", label: "続けられる保育の仕事", detail: "休みと研修を支える人員が増えた", kind: "people" },
+  "childcare-digital": { icon: "記", label: "軽くなった保育の記録", detail: "事務を減らし子どもと向き合う時間が増えた", kind: "industry" },
+  "neighborhood-childcare": { icon: "抱", label: "地域の預かり合い", detail: "短い時間の子育てを地域で助けている", kind: "people" },
+  "single-use-rule": { icon: "減", label: "減り始めた使い捨て容器", detail: "店頭に繰り返し使える選択肢が並んだ", kind: "green" },
+  "container-deposit": { icon: "返", label: "容器の返却箱", detail: "使った容器が地域の資源として戻る", kind: "green" },
+  "cleanup-days": { icon: "浜", label: "地域で守る海岸", detail: "清掃からごみの原因を考え始めた", kind: "green" },
+  "school-air-conditioning": { icon: "冷", label: "涼しくなった教室", detail: "暑い日にも安全に学べるようになった", kind: "people" },
+  "cool-school-retrofit": { icon: "窓", label: "暑さに強い校舎", detail: "日よけと断熱で使う電気も抑えている", kind: "green" },
+  "summer-schedule": { icon: "朝", label: "夏の新しい時間割", detail: "暑い時間を避けた学び方が始まった", kind: "people" },
+  "open-city-data": { icon: "図", label: "みんなで使える市の地図", detail: "公開データから地域の提案が生まれた", kind: "industry" },
+  "predictive-support": { icon: "先", label: "先回りする支援案内", detail: "助けと監視の境目が議論されている", kind: "industry" },
+  "privacy-audit": { icon: "鍵", label: "個人情報を守る約束", detail: "集める情報と使わない情報を決めた", kind: "people" },
+  "home-care-workforce": { icon: "訪", label: "地域を回る介護チーム", detail: "専門職が家庭の暮らしを支えている", kind: "people" },
+  "care-technology": { icon: "補", label: "介護を助ける道具", detail: "職員の身体の負担を軽くしている", kind: "industry" },
+  "mutual-aid-visits": { icon: "声", label: "週一度の見守り", detail: "小さな変化を支援へつないでいる", kind: "people" },
+  "community-energy": { icon: "電", label: "住民の地域発電会社", detail: "電気の利益と技術を地域へ戻している", kind: "green" },
+  "renewable-purchase": { icon: "替", label: "再生可能電力の公共施設", detail: "契約を替えて早く環境負担を減らした", kind: "green" },
+  "efficiency-retrofit": { icon: "省", label: "省エネになった公共施設", detail: "照明と空調を直し使う電気を減らした", kind: "green" },
+  "multilingual-services": { icon: "言", label: "多言語の相談窓口", detail: "医療や学校の情報が伝わりやすくなった", kind: "people" },
+  "worker-recruitment": { icon: "働", label: "地域へ来た新しい働き手", detail: "仕事とともに暮らしの条件も問われている", kind: "industry" },
+  "intercultural-neighborhood": { icon: "隣", label: "言葉を越えた地域活動", detail: "料理と防災から隣人同士がつながった", kind: "people" },
+  "emergency-stockpiles": { icon: "箱", label: "分散された備蓄棚", detail: "物資を地域で使いながら更新している", kind: "industry" },
+  "public-health-network": { icon: "結", label: "健康を守る連絡網", detail: "医療・学校・福祉が同じ訓練をした", kind: "people" },
+  "decade-reserve": { icon: "蓄", label: "次の10年への予備費", detail: "目に見えない危機へ使えるお金を残した", kind: "people" },
 };
 
 export const endingProfiles = [
@@ -131,19 +178,19 @@ export const endingProfiles = [
     id: "inclusive",
     title: "手を取り合う、やさしいまち",
     text: "人の暮らしに近い場所へ力を注いだあなた。便利さだけでなく、取り残される人がいない未来を選びました。",
-    actionIds: ["child-support", "community-bus", "work-balance", "cool-shelters", "maintain-services", "inclusive-evacuation", "community-kitchen", "citizen-assembly", "neighborhood-grants"],
+    actionIds: ["child-support", "community-bus", "work-balance", "cool-shelters", "maintain-services", "inclusive-evacuation", "community-kitchen", "citizen-assembly", "neighborhood-grants", "care-worker-pay", "neighborhood-childcare", "school-air-conditioning", "home-care-workforce", "mutual-aid-visits", "multilingual-services", "intercultural-neighborhood", "public-health-network"],
   },
   {
     id: "innovative",
     title: "技術で未来をひらくまち",
     text: "新しい設備や技術へ思い切って投資したあなた。変化の速さと、その恩恵をどう分かち合うかが次の課題です。",
-    actionIds: ["clean-energy", "road-investment", "automation", "water-renewal", "innovation-fund", "drainage-upgrade", "evacuation-app", "mass-tourism", "visible-projects"],
+    actionIds: ["clean-energy", "road-investment", "automation", "water-renewal", "innovation-fund", "drainage-upgrade", "evacuation-app", "mass-tourism", "visible-projects", "childcare-digital", "predictive-support", "care-technology", "community-energy", "worker-recruitment"],
   },
   {
     id: "resilient",
     title: "地域の力で育つまち",
     text: "地域の仕事、学び、歩ける環境を結んだあなた。小さな力が積み重なり、変化にしなやかなまちが生まれました。",
-    actionIds: ["local-business", "walking-city", "job-training", "green-roofs", "reserve-fund", "shared-workshop", "temporary-market", "slow-tourism", "resident-first"],
+    actionIds: ["local-business", "walking-city", "job-training", "green-roofs", "reserve-fund", "shared-workshop", "temporary-market", "slow-tourism", "resident-first", "single-use-rule", "container-deposit", "cleanup-days", "cool-school-retrofit", "summer-schedule", "open-city-data", "privacy-audit", "renewable-purchase", "efficiency-retrofit", "emergency-stockpiles", "decade-reserve"],
   },
 ] as const;
 

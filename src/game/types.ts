@@ -32,7 +32,7 @@ export type Turn = {
   id: string;
   label: string;
   chapter: string;
-  decisionType: "政策" | "予算編成" | "危機への備え" | "地域との協働" | "章末判断";
+  decisionType: "政策" | "予算編成" | "危機への備え" | "地域との協働" | "議会との調整" | "章末判断";
   headline: string;
   context: string;
   scenarioKind: "historical-frame" | "fictional";
