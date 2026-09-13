@@ -6,6 +6,18 @@
   text-rendering: optimizeLegibility;
 }
 
+.newspaper { background: #f3e9cf; color: #243139; padding: 22px; border-radius: 4px; border-top: 6px solid #e3b359; margin-bottom: 24px; }
+.newspaper h3 { color: #182932; font-size: 1.35rem; }
+.newspaper p { line-height: 1.7; }
+.adviser { margin: 20px 0; padding: 20px; background: #173d47; border-left: 4px solid #f0c274; border-radius: 12px; }
+.adviser p { line-height: 1.7; color: #e0ece9; }
+.adviser small { color: #bbcfcb; }
+.policy-hint { background: #1b4149; padding: 8px; border-radius: 6px; font-size: .8rem; line-height: 1.5; }
+.future-panel { padding: 16px; border: 1px solid #f0c274; border-radius: 12px; margin-bottom: 24px; }
+.future-panel p { line-height: 1.6; }
+.future-panel strong { color: #f0c274; }
+.action-card:disabled { opacity: .5; cursor: not-allowed; }
+
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(circle at 15% 0%, #123a43 0, #071f2a 38%, #041117 100%); }
 button { font: inherit; }
@@ -59,6 +71,12 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .action-card b { margin-top: 3px; color: #8debd5; font-size: .78rem; }
 .notice { margin: 0; padding: 0 38px 24px; color: #7ca5a1; font-size: .8rem; }
 .ending { min-height: 310px; display: flex; flex-direction: column; justify-content: center; }
+.ending-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 18px 0 8px; }
+.ending-summary > div { position: relative; display: grid; gap: 6px; min-height: 110px; padding: 15px; border: 1px solid #38626a; border-radius: 13px; background: #102f38; }
+.ending-summary span { color: #83aaa5; font-size: .7rem; }
+.ending-summary strong { color: #fff; font-size: .9rem; }
+.ending-summary b { align-self: end; color: #72d9c2; font-size: 1.5rem; }
+.ending-chains { padding: 10px 13px; border-radius: 9px; background: #173f48; color: #bde9df !important; font-size: .82rem; }
 .primary-button { align-self: start; margin-top: 14px; padding: 13px 19px; border: 0; border-radius: 12px; background: #72d9c2; color: #08242d; font-weight: 800; cursor: pointer; }
 .primary-button.wide { width: 100%; padding: 16px 20px; font-size: 1rem; }
 
@@ -140,6 +158,8 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .action-card { min-height: 108px; }
   .goals-panel { padding: 18px; }
   .impact-grid { grid-template-columns: 1fr; }
+  .ending-summary { grid-template-columns: 1fr; }
+  .ending-summary > div { min-height: 88px; }
   .prologue-page { padding: 14px; }
   .prologue { border-radius: 20px; }
   .prologue-art { min-height: 240px; }

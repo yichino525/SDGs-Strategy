@@ -40,6 +40,8 @@ export type HistoryEntry = {
 };
 
 export type GameState = {
+  report?: { title: string; stories: string[]; effects: Effects };
+  pending?: { due: number; title: string; effects: Effects }[];
   version: 1;
   turnIndex: number;
   goals: Record<GoalId, number>;

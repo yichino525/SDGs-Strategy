@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { goals } from "./data/goals";
 import { turns } from "./data/turns";
+import { advisers, chains, delayed } from "./data/strategy";
+import { buildEnding } from "./game/endingEngine";
 import { applyAction, averageGoalScore, createInitialState } from "./game/scoreEngine";
 import { clearSave, loadGame, saveGame } from "./game/storage";
 import type { Action, GameState } from "./game/types";
@@ -18,10 +20,11 @@ const ResourceCard = ({ label, value, icon }: { label: string; value: number; ic
 function App() {
   const [state, setState] = useState<GameState>(() => loadGame() ?? createInitialState());
   const [showPrologue, setShowPrologue] = useState(state.history.length === 0);
-  const [lastAction, setLastAction] = useState<Action | null>(null);
+  const lastAction = state.report;
   const [notice, setNotice] = useState("選択は自動的に保存されます");
   const currentTurn = turns[state.turnIndex];
   const average = useMemo(() => averageGoalScore(state), [state]);
+  const ending = useMemo(() => buildEnding(state, goals), [state]);
 
   useEffect(() => {
     saveGame(state);
@@ -30,14 +33,12 @@ function App() {
   const chooseAction = (action: Action) => {
     if (!currentTurn) return;
     setState((previous) => applyAction(previous, action, currentTurn.label, turns.length));
-    setLastAction(action);
     setNotice(`「${action.title}」を選びました`);
   };
 
   const restart = () => {
     clearSave();
     setState(createInitialState());
-    setLastAction(null);
     setShowPrologue(true);
     setNotice("新しいゲームを始めました");
   };
@@ -112,8 +113,13 @@ function App() {
               <div className="chosen-action">
                 <span>今回の選択</span>
                 <strong>{lastAction.title}</strong>
-                <p>{lastAction.tradeoff}</p>
+                <p>今回の政策と、これまでの投資を合わせた実際の変化です。</p>
               </div>
+              <article className="newspaper">
+                <p>まちの未来新聞 · 第{state.turnIndex}号 · 架空のニュース</p>
+                <h3>{lastAction.stories.length ? "以前の選択が、今日につながった。" : "新しい方針、地域で動き出す"}</h3>
+                {lastAction.stories.length ? lastAction.stories.map(story => <p key={story}>{story}</p>) : <p>「{lastAction.title}」が決まりました。住民たちは、これからの変化を見守っています。</p>}
+              </article>
               <h3>変化したもの</h3>
               <div className="impact-grid">
                 {(["budget", "economy", "trust"] as const).map((key) => {
@@ -129,7 +135,7 @@ function App() {
                 })}
               </div>
               <p className="result-note">良くなった数字だけでなく、負担や後回しになった課題も次の判断につながります。</p>
-              <button className="primary-button wide" onClick={() => setLastAction(null)}>
+              <button className="primary-button wide" onClick={() => setState(previous => ({ ...previous, report: undefined }))}>
                 {state.completed ? "4ターンの結果を見る" : "次の四半期へ進む"} →
               </button>
             </div>
@@ -138,13 +144,17 @@ function App() {
               <div className="turn-heading"><p className="turn-label">{currentTurn.label}</p><span>選択 {state.turnIndex + 1} / {turns.length}</span></div>
               <h2>{currentTurn.headline}</h2>
               <p>{currentTurn.context}</p>
+              <blockquote className="adviser"><strong>{advisers[state.turnIndex].name} · {advisers[state.turnIndex].role}</strong><p>「{advisers[state.turnIndex].quote}」</p><small>登場人物は創作です</small></blockquote>
               <div className="actions">
                 {currentTurn.actions.map((action) => (
-                  <button className="action-card" key={action.id} onClick={() => chooseAction(action)}>
+                  <button className="action-card" key={action.id} disabled={state.resources.budget + (action.effects.budget ?? 0) < 0} onClick={() => chooseAction(action)}>
                     <span className="action-index">選択肢 {String.fromCharCode(65 + currentTurn.actions.indexOf(action))}</span>
                     <span className="action-title">{action.title}</span>
                     <span>{action.description}</span>
                     <small>{action.tradeoff}</small>
+                    <span className="policy-hint">必要予算 {Math.max(0, -(action.effects.budget ?? 0))} ／ 残り {state.resources.budget}</span>
+                    {delayed[action.id] && <span className="policy-hint">◷ 2四半期後にも効果：{delayed[action.id].title}</span>}
+                    {chains.filter(chain => chain.action === action.id).map(chain => <span className="policy-hint" key={chain.requires}>{state.history.some(entry => entry.actionId === chain.requires) ? '✦ 連鎖が発動！' : '連鎖のヒント：'} {chain.title}</span>)}
                     <b>この方針を選ぶ →</b>
                   </button>
                 ))}
@@ -153,8 +163,15 @@ function App() {
           ) : (
             <div className="decision-panel ending">
               <p className="turn-label">4ターン体験版 完了</p>
-              <h2>あなたが選んだ、日本のはじまり</h2>
+              <h2>{ending.profile.title}</h2>
+              <p>{ending.profile.text}</p>
               <p>SDGs平均は <strong>{average}</strong>、残り予算は <strong>{state.resources.budget}</strong> です。どの選択にも、得られたものと後回しになったものがあります。</p>
+              <div className="ending-summary">
+                <div><span>最も伸びた目標</span><strong>{ending.strongest.id}・{ending.strongest.shortName}</strong><b>{state.goals[ending.strongest.id]}</b></div>
+                <div><span>次に向き合う目標</span><strong>{ending.attention.id}・{ending.attention.shortName}</strong><b>{state.goals[ending.attention.id]}</b></div>
+                <div><span>見つけた政策連鎖</span><strong>{ending.triggeredChains.length} / {chains.length}</strong><b>✦</b></div>
+              </div>
+              {ending.triggeredChains.length > 0 && <p className="ending-chains">発見：{ending.triggeredChains.map((chain) => chain.title).join("、")}</p>}
               <button className="primary-button" onClick={restart}>もう一度プレイする</button>
             </div>
           )}
@@ -162,6 +179,7 @@ function App() {
         </section>
 
         <aside className="goals-panel">
+          {(state.pending ?? []).length > 0 && <section className="future-panel"><p className="eyebrow">育っている投資</p>{state.pending?.map(item => <p key={item.title}><strong>あと{item.due - state.turnIndex}四半期</strong><br />{item.title}</p>)}</section>}
           <div className="section-heading">
             <div>
               <p className="eyebrow">17 GOALS</p>

@@ -1,4 +1,6 @@
 import { goals } from "../data/goals";
+import { chains, delayed } from "../data/strategy";
+import type { Effects } from "./types";
 import type { Action, GameState, GoalId } from "./types";
 
 export const clamp = (value: number, min = 0, max = 100) =>
@@ -19,25 +21,49 @@ export const applyAction = (
   turnLabel: string,
   totalTurns: number,
 ): GameState => {
-  if (state.completed) return state;
+  if (state.completed || state.resources.budget + (action.effects.budget ?? 0) < 0) return state;
+
+  const effects: Effects = { ...action.effects, goals: { ...action.effects.goals } };
+  const stories: string[] = [];
+  const merge = (extra: Effects) => {
+    for (const key of ["budget", "economy", "trust"] as const) effects[key] = (effects[key] ?? 0) + (extra[key] ?? 0);
+    for (const [id, value] of Object.entries(extra.goals)) effects.goals[Number(id)] = (effects.goals[Number(id)] ?? 0) + (value ?? 0);
+  };
+  const nextTurnIndex = state.turnIndex + 1;
+  const pending = [...(state.pending ?? [])];
+  for (const item of pending.filter(item => item.due <= nextTurnIndex)) {
+    merge(item.effects);
+    stories.push(`実を結んだ投資：${item.title}`);
+  }
+  for (const chain of chains.filter(item => item.action === action.id && state.history.some(entry => entry.actionId === item.requires))) {
+    merge(chain.effects);
+    stories.push(`政策の連鎖「${chain.title}」：${chain.text}`);
+  }
+  const future = delayed[action.id];
+  if (future) pending.push({ ...future, due: nextTurnIndex + 2 });
 
   const nextGoals = { ...state.goals };
-  for (const [rawId, change] of Object.entries(action.effects.goals)) {
+  for (const [rawId, change] of Object.entries(effects.goals)) {
     const id = Number(rawId) as GoalId;
     nextGoals[id] = clamp((nextGoals[id] ?? 50) + (change ?? 0));
   }
 
-  const nextTurnIndex = state.turnIndex + 1;
+  const resources = {
+    budget: clamp(state.resources.budget + (effects.budget ?? 0)),
+    economy: clamp(state.resources.economy + (effects.economy ?? 0)),
+    trust: clamp(state.resources.trust + (effects.trust ?? 0)),
+  };
+  const actual: Effects = { goals: {} };
+  for (const key of ["budget", "economy", "trust"] as const) actual[key] = resources[key] - state.resources[key];
+  for (const goal of goals) actual.goals[goal.id] = nextGoals[goal.id] - state.goals[goal.id];
   return {
     ...state,
+    pending: pending.filter(item => item.due > nextTurnIndex),
+    report: { title: action.title, stories, effects: actual },
     turnIndex: nextTurnIndex,
     completed: nextTurnIndex >= totalTurns,
     goals: nextGoals,
-    resources: {
-      budget: clamp(state.resources.budget + (action.effects.budget ?? 0)),
-      economy: clamp(state.resources.economy + (action.effects.economy ?? 0)),
-      trust: clamp(state.resources.trust + (action.effects.trust ?? 0)),
-    },
+    resources,
     history: [
       ...state.history,
       {
