@@ -9,7 +9,7 @@ describe('政策の積み重ね', () => {
     state = applyAction(state, turns[0].actions[0], turns[0].label, 4);
     expect(state.pending).toHaveLength(1);
     state = applyAction(state, turns[1].actions[1], turns[1].label, 4);
-    expect(state.report?.stories).toHaveLength(0);
+    expect(state.report?.stories.some((story) => story.includes('実を結んだ投資'))).toBe(false);
     state = applyAction(state, turns[2].actions[0], turns[2].label, 4);
     expect(state.goals[4]).toBe(59);
     expect(state.pending).toHaveLength(0);
@@ -20,7 +20,7 @@ describe('政策の積み重ね', () => {
     let state = applyAction(createInitialState(), turns[0].actions[0], turns[0].label, 4);
     state = applyAction(state, turns[1].actions[0], turns[1].label, 4);
     expect(state.goals[4]).toBe(60);
-    expect(state.report?.stories[0]).toContain('居場所 × 移動手段');
+    expect(state.report?.stories.some((story) => story.includes('居場所 × 移動手段'))).toBe(true);
   });
   it('上限で切り詰めた実際の差分を報告する', () => {
     const state = createInitialState();

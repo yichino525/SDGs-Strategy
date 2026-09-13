@@ -83,6 +83,21 @@ export const implementationPlans: Record<string, ImplementationPlan> = {
   },
 };
 
+export const cityMemories: Record<string, { icon: string; label: string; detail: string; kind: "people" | "mobility" | "green" | "industry" }> = {
+  "child-support": { icon: "灯", label: "放課後の居場所", detail: "教室に人の明かりが残るようになった", kind: "people" },
+  "clean-energy": { icon: "光", label: "公共施設の発電", detail: "学校と市役所の屋根が電気をつくる", kind: "green" },
+  "local-business": { icon: "店", label: "商店街の設備", detail: "工房と求人に新しい動きが生まれた", kind: "industry" },
+  "community-bus": { icon: "BUS", label: "学校と病院のバス", detail: "移動できる時間と場所が増えた", kind: "mobility" },
+  "road-investment": { icon: "道", label: "物流道路", detail: "配送が速くなり、交通量も増えた", kind: "mobility" },
+  "walking-city": { icon: "歩", label: "歩ける駅前", detail: "歩道と自転車道に人が戻った", kind: "mobility" },
+  "work-balance": { icon: "時", label: "家族と過ごす時間", detail: "夕方の家とまちに人が戻った", kind: "people" },
+  "automation": { icon: "技", label: "自動化された工場", detail: "生産が速くなり、学び直しも必要になった", kind: "industry" },
+  "job-training": { icon: "学", label: "夜の学習講座", detail: "働く世代が新しい技能を学び始めた", kind: "people" },
+  "cool-shelters": { icon: "涼", label: "まちの休憩所", detail: "暑い日にも安心して休める場所が増えた", kind: "people" },
+  "water-renewal": { icon: "水", label: "新しい水道管", detail: "見えない場所で安全な水を支えている", kind: "industry" },
+  "green-roofs": { icon: "緑", label: "木陰と屋上庭園", detail: "通学路と屋根に緑が増えた", kind: "green" },
+};
+
 export const endingProfiles = [
   {
     id: "inclusive",

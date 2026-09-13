@@ -20,6 +20,7 @@ export const turns: Turn[] = [
         tradeoff: "すぐに予算が必要ですが、将来の格差を小さくできます。",
         audience: "子ども・家庭",
         timing: "あとから",
+        resultStory: "放課後の教室に温かい食事と学習机が用意されました。利用できる家庭へ情報を届けることが次の課題です。",
         effects: { budget: -12, trust: 5, goals: { 1: 6, 2: 4, 4: 6, 10: 3 } },
       },
       {
@@ -29,6 +30,7 @@ export const turns: Turn[] = [
         tradeoff: "初期費用は高い一方、将来のエネルギー負担を減らせます。",
         audience: "住民・公共施設",
         timing: "あとから",
+        resultStory: "市役所と学校の屋根に太陽光パネルが並びました。曇りの日に備える電力の使い方も話し合われています。",
         effects: { budget: -15, economy: 2, goals: { 7: 7, 9: 3, 13: 6 } },
       },
       {
@@ -38,6 +40,7 @@ export const turns: Turn[] = [
         tradeoff: "経済は伸びやすいですが、環境対策は後回しになります。",
         audience: "地域企業・働く人",
         timing: "すぐ",
+        resultStory: "商店街の工房で新しい機械が動き、求人が一つ増えました。一方、環境設備への投資は次年度へ持ち越されました。",
         effects: { budget: -8, economy: 6, trust: 1, goals: { 8: 6, 9: 5, 12: -2, 13: -2 } },
       },
     ],
@@ -56,6 +59,7 @@ export const turns: Turn[] = [
         tradeoff: "運営費が続きますが、移動できる人が増えます。",
         audience: "学生・高齢者",
         timing: "すぐ",
+        resultStory: "学校と病院を結ぶバスに最初の乗客が乗りました。利用の少ない時間帯をどう支えるかが話題になっています。",
         effects: { budget: -10, trust: 5, goals: { 3: 4, 10: 4, 11: 7, 13: 2 } },
       },
       {
@@ -65,6 +69,7 @@ export const turns: Turn[] = [
         tradeoff: "物流には有利ですが、車への依存が高まります。",
         audience: "運送業・車利用者",
         timing: "あとから",
+        resultStory: "配送時間が短くなり、店には早く商品が届きました。沿道では交通量と排気への心配も聞かれます。",
         effects: { budget: -12, economy: 5, goals: { 8: 2, 9: 6, 11: 1, 13: -4 } },
       },
       {
@@ -74,6 +79,7 @@ export const turns: Turn[] = [
         tradeoff: "効果が出るまで時間はかかりますが、健康と地域商業に役立ちます。",
         audience: "歩行者・商店",
         timing: "あとから",
+        resultStory: "駅前に新しい歩道と自転車置き場ができました。車で訪れる人との使い分けが始まっています。",
         effects: { budget: -9, economy: 2, trust: 3, goals: { 3: 4, 8: 2, 11: 6, 13: 4 } },
       },
     ],
@@ -92,6 +98,7 @@ export const turns: Turn[] = [
         tradeoff: "短期の生産量は下がる可能性がありますが、安心して働けます。",
         audience: "働く人・子育て家庭",
         timing: "すぐ",
+        resultStory: "子どもの行事に参加できた社員が、久しぶりに家族と夕食を囲みました。職場では仕事の分担を見直しています。",
         effects: { budget: -8, economy: -1, trust: 5, goals: { 3: 4, 5: 6, 8: 6, 10: 2 } },
       },
       {
@@ -101,6 +108,7 @@ export const turns: Turn[] = [
         tradeoff: "生産性は上がりますが、学び直しがないと格差が広がります。",
         audience: "企業・働く人",
         timing: "すぐ",
+        resultStory: "工場の作業が速くなった一方、機械の扱いに不安を感じる人もいます。新しい技能を学ぶ場が求められています。",
         effects: { budget: -10, economy: 7, goals: { 8: 2, 9: 7, 10: -4 } },
       },
       {
@@ -110,6 +118,7 @@ export const turns: Turn[] = [
         tradeoff: "効果はゆっくりですが、変化に強い社会を作れます。",
         audience: "転職者・働く人",
         timing: "あとから",
+        resultStory: "夜の学習講座に幅広い世代が集まりました。学んだ技能を地域の求人へつなぐ取り組みが始まっています。",
         effects: { budget: -7, economy: 3, trust: 3, goals: { 4: 5, 8: 5, 9: 3, 10: 3 } },
       },
     ],
@@ -128,6 +137,7 @@ export const turns: Turn[] = [
         tradeoff: "電気を使いますが、暑さから命を守れます。",
         audience: "高齢者・屋外の人",
         timing: "すぐ",
+        resultStory: "商店の休憩所で、水を飲みながら涼む人が増えました。電力消費を抑える工夫も続いています。",
         effects: { budget: -6, trust: 5, goals: { 3: 7, 10: 3, 11: 4, 13: -1 } },
       },
       {
@@ -137,6 +147,7 @@ export const turns: Turn[] = [
         tradeoff: "目立ちにくい事業ですが、長く安全な水を守れます。",
         audience: "すべての住民",
         timing: "あとから",
+        resultStory: "道路の下で古い水道管の交換が始まりました。目立たない工事ですが、水漏れの報告が減っています。",
         effects: { budget: -12, trust: 3, goals: { 3: 2, 6: 8, 9: 3, 11: 4 } },
       },
       {
@@ -146,6 +157,7 @@ export const turns: Turn[] = [
         tradeoff: "手入れが必要ですが、暑さと生き物の環境を同時に改善します。",
         audience: "学生・地域住民",
         timing: "あとから",
+        resultStory: "通学路に若い木が植えられ、屋上には小さな庭ができました。水やりを続ける担い手を探しています。",
         effects: { budget: -9, economy: 1, trust: 4, goals: { 11: 5, 13: 5, 15: 6 } },
       },
     ],

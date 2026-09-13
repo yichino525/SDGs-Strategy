@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { goals } from "./data/goals";
 import { turns } from "./data/turns";
-import { advisers, chains, delayed, implementationPlans } from "./data/strategy";
+import { advisers, chains, cityMemories, delayed, implementationPlans } from "./data/strategy";
 import type { ImplementationOption } from "./data/strategy";
 import { buildEnding } from "./game/endingEngine";
 import { applyAction, averageGoalScore, createInitialState } from "./game/scoreEngine";
@@ -35,6 +35,8 @@ function App() {
   const lowest = useMemo(() => Math.min(...Object.values(state.goals)), [state]);
   const ending = useMemo(() => buildEnding(state, goals), [state]);
   const implementationPlan = pendingAction ? implementationPlans[pendingAction.id] : undefined;
+  const memories = useMemo(() => state.history.flatMap((entry) => cityMemories[entry.actionId] ? [cityMemories[entry.actionId]] : []), [state.history]);
+  const sceneKinds = useMemo(() => new Set(memories.map((memory) => memory.kind)), [memories]);
 
   useEffect(() => {
     saveGame(state);
@@ -142,16 +144,27 @@ function App() {
 
       <div className="game-layout">
         <section className="scene-card">
-          <div className={`city-scene mood-${average >= 55 && lowest >= 48 ? "bright" : lowest < 48 ? "cloudy" : "calm"}`}>
+          <div className={`city-scene mood-${average >= 55 && lowest >= 48 ? "bright" : lowest < 48 ? "cloudy" : "calm"} ${[...sceneKinds].map((kind) => `has-${kind}`).join(" ")}`}>
             <div className="sky-orb" />
             <div className="city-line" aria-hidden="true">
               <span /><span /><span /><span /><span />
+            </div>
+            <div className="city-details" aria-hidden="true">
+              <span className="scene-solar" />
+              <span className="scene-bus">●</span>
+              <span className="scene-tree" />
+              <span className="scene-lights">•••</span>
             </div>
             <div className="scene-copy">
               <p>窓の向こうのまち</p>
               <strong>{average >= 55 && lowest >= 48 ? "希望の変化がまち全体へ広がっています" : lowest < 48 ? "取り残された課題に、不安の声が届いています" : "静かに未来が動き始めています"}</strong>
             </div>
           </div>
+
+          {memories.length > 0 && <section className="city-memory" aria-label="街に残った変化">
+            <div><p className="eyebrow">CITY MEMORY</p><h2>街に残った変化</h2></div>
+            <div className="memory-list">{memories.map((memory) => <article key={memory.label}><span aria-hidden="true">{memory.icon}</span><div><strong>{memory.label}</strong><small>{memory.detail}</small></div></article>)}</div>
+          </section>}
 
           {lastAction ? (
             <div className="decision-panel result-panel" aria-live="polite">

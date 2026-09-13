@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chains, delayed, implementationPlans } from "../data/strategy";
+import { chains, cityMemories, delayed, implementationPlans } from "../data/strategy";
 import { turns } from "../data/turns";
 import { applyAction, averageGoalScore, createInitialState } from "./scoreEngine";
 import type { Action, GameState } from "./types";
@@ -52,6 +52,10 @@ describe("全ルートのバランス", () => {
   it("行動IDと政策連鎖の参照先が壊れていない", () => {
     const ids = turns.flatMap((turn) => turn.actions.map((action) => action.id));
     expect(new Set(ids).size).toBe(ids.length);
+    for (const action of turns.flatMap((turn) => turn.actions)) {
+      expect(action.resultStory).toBeTruthy();
+      expect(cityMemories[action.id]).toBeDefined();
+    }
     for (const id of Object.keys(implementationPlans)) expect(ids).toContain(id);
     for (const id of Object.keys(delayed)) expect(ids).toContain(id);
     for (const chain of chains) {
