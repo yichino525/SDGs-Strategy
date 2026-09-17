@@ -1,4 +1,5 @@
 import type { Effects } from "../game/types";
+import { turns } from "./turns";
 
 // 数値と人物は体験版用の創作。現実の政策効果の予測ではない。
 export const delayed: Record<string, { title: string; effects: Effects }> = {
@@ -37,7 +38,7 @@ export const chains = [
   { requires: "inclusive-evacuation", action: "intercultural-neighborhood", title: "避難のつながり × 多文化の地域", text: "避難地図づくりで生まれた関係が、言葉の違いを越えた防災活動へ広がりました。", effects: { trust: 4, goals: { 10: 3, 11: 3, 16: 2 } } },
 ];
 
-export const advisers = [
+const baseAdvisers = [
   { name: "青木 はるか", role: "地域の教師", quote: "今日を乗り切る支援と、将来への投資。子どもたちには両方が必要です。" },
   { name: "森 健太", role: "商店主", quote: "道がつながれば、人もつながる。誰がどこへ行けるかを考えてみませんか。" },
   { name: "田中 美咲", role: "職業相談員", quote: "新しい技術の隣に、学ぶ機会も。これまでの投資を仕事につなげましょう。" },
@@ -56,6 +57,9 @@ export const advisers = [
   { name: "グエン ミン", role: "地域工場で働く住民", quote: "仕事の説明だけでなく、病院や学校、防災のことも分かれば、このまちで暮らしていけます。" },
   { name: "金城 ソフィア", role: "地域の防災リーダー", quote: "備えは使わない日には見えません。それでも、つながりと物資の両方を残す意味があります。" },
 ];
+
+// 長編でも、特定の立場だけが繰り返し登場しないよう、既存の創作人物を順に巡回させる。
+export const advisers = Array.from({ length: turns.length }, (_, index) => baseAdvisers[index % baseAdvisers.length]);
 
 export type ImplementationOption = {
   id: string;
@@ -171,6 +175,13 @@ export const cityMemories: Record<string, { icon: string; label: string; detail:
   "emergency-stockpiles": { icon: "箱", label: "分散された備蓄棚", detail: "物資を地域で使いながら更新している", kind: "industry" },
   "public-health-network": { icon: "結", label: "健康を守る連絡網", detail: "医療・学校・福祉が同じ訓練をした", kind: "people" },
   "decade-reserve": { icon: "蓄", label: "次の10年への予備費", detail: "目に見えない危機へ使えるお金を残した", kind: "people" },
+  ...Object.fromEntries(turns.flatMap((turn) => turn.actions)
+    .filter((action) => action.id.startsWith("future-"))
+    .map((action) => {
+      const approach = action.id.endsWith("-listen") ? "people" : action.id.endsWith("-build") ? "industry" : "green";
+      const icon = approach === "people" ? "話" : approach === "industry" ? "工" : "芽";
+      return [action.id, { icon, label: action.title, detail: "2030年へ向けた地域の新しい取り組み", kind: approach }];
+    })),
 };
 
 export const endingProfiles = [

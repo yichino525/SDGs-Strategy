@@ -1,6 +1,6 @@
 import type { Turn } from "../game/types";
 
-export const turns: Turn[] = [
+const earlyTurns: Turn[] = [
   {
     id: "2015-q4",
     label: "2015年 第4四半期",
@@ -704,3 +704,120 @@ export const turns: Turn[] = [
     ],
   },
 ];
+
+type FutureSeed = Omit<Turn, "id" | "label" | "actions"> & {
+  year: number;
+  quarter: number;
+  theme: string;
+  focus: Record<number, number>;
+  pressure?: Record<number, number>;
+};
+
+// 2020年以降は、現実の出来事を背景にしつつ、みらい市で起きることはゲーム用の仮想シナリオとしている。
+const futureSeeds: FutureSeed[] = [
+  { year: 2020, quarter: 1, chapter: "第3章 危機の時代", decisionType: "危機への備え", headline: "見えない危機への最初の判断", context: "感染症の広がりが心配されています。暮らしを守りながら、何を急ぎますか？", scenarioKind: "historical-frame", theme: "地域の健康と暮らしを守る", focus: { 3: 6, 10: 3, 16: 2 }, pressure: { 8: -2 } },
+  { year: 2020, quarter: 2, chapter: "第3章 危機の時代", decisionType: "危機への備え", headline: "離れていても、つながれる？", context: "学校、店、相談窓口がいつもの形では開けません。孤立を減らす方法を選びます。", scenarioKind: "historical-frame", theme: "離れていても支え合う", focus: { 3: 4, 4: 5, 10: 4 }, pressure: { 8: -2 } },
+  { year: 2020, quarter: 3, chapter: "第3章 危機の時代", decisionType: "予算編成", headline: "小さな店と働く人の明日", context: "売上が減る店と、仕事を失いかけた人から相談が届いています。", scenarioKind: "historical-frame", theme: "地域の仕事をつなぎ止める", focus: { 1: 3, 8: 6, 10: 3 }, pressure: { 12: -1 } },
+  { year: 2020, quarter: 4, chapter: "第3章 危機の時代", decisionType: "地域との協働", headline: "冬を越えるための約束", context: "不安が長引くなか、支援が届いていない家庭をどう見つけますか？", scenarioKind: "historical-frame", theme: "冬の安心を分け合う", focus: { 1: 5, 2: 4, 3: 3, 16: 2 } },
+  { year: 2021, quarter: 1, chapter: "第3章 危機の時代", decisionType: "危機への備え", headline: "守る順番を、誰と決める？", context: "限られた医療と支援の順番をめぐり、さまざまな意見が出ています。", scenarioKind: "historical-frame", theme: "納得できる健康の守り方", focus: { 3: 6, 10: 3, 16: 4 } },
+  { year: 2021, quarter: 2, chapter: "第3章 危機の時代", decisionType: "政策", headline: "学びの空白を取り戻す", context: "家庭の環境によって、学ぶ時間や道具に差が出ています。", scenarioKind: "fictional", theme: "学び直せる居場所をつくる", focus: { 4: 7, 5: 2, 10: 4 }, pressure: { 9: 1 } },
+  { year: 2021, quarter: 3, chapter: "第3章 危機の時代", decisionType: "地域との協働", headline: "戻るにぎわい、残る不安", context: "少しずつ人が集まり始めました。安心と仕事をどう両立しますか？", scenarioKind: "fictional", theme: "安心して地域の仕事を再開する", focus: { 3: 3, 8: 5, 11: 2 }, pressure: { 13: -1 } },
+  { year: 2021, quarter: 4, chapter: "第3章 危機の時代", decisionType: "予算編成", headline: "次の危機にも強い市役所へ", context: "緊急対応で見えた弱点を、日常の仕組みに残すか決めます。", scenarioKind: "fictional", theme: "危機から学ぶ市役所", focus: { 3: 4, 9: 3, 16: 5, 17: 3 } },
+  { year: 2022, quarter: 1, chapter: "第4章 回復を分け合う", decisionType: "政策", headline: "物価が上がる春", context: "食べ物や電気の値段が上がり、同じ負担ではないことが見えてきました。", scenarioKind: "fictional", theme: "暮らしの負担をやわらげる", focus: { 1: 4, 2: 5, 7: 3, 10: 3 }, pressure: { 8: -1 } },
+  { year: 2022, quarter: 2, chapter: "第4章 回復を分け合う", decisionType: "地域との協働", headline: "子どもの声を計画に入れる", context: "公園、放課後、交通について、子どもたちから提案が届きました。", scenarioKind: "fictional", theme: "子どもと未来を設計する", focus: { 4: 5, 10: 3, 11: 4, 16: 3 } },
+  { year: 2022, quarter: 3, chapter: "第4章 回復を分け合う", decisionType: "政策", headline: "食べものを、捨てずに回す", context: "店と家庭から出る食べ残しを、支援と環境の両方につなげられます。", scenarioKind: "fictional", theme: "食べものを大切に分け合う", focus: { 2: 4, 8: 2, 12: 6, 13: 2 } },
+  { year: 2022, quarter: 4, chapter: "第4章 回復を分け合う", decisionType: "予算編成", headline: "回復の実りを、どこへ戻す？", context: "税収が少し戻りました。すぐ使うか、次の世代へ残すかを決めます。", scenarioKind: "fictional", theme: "回復の実りを地域に戻す", focus: { 8: 4, 9: 3, 10: 3, 17: 2 } },
+  { year: 2023, quarter: 1, chapter: "第5章 気候と暮らし", decisionType: "危機への備え", headline: "暑さが当たり前になる前に", context: "夏の暑さへの心配が、学校、農家、屋外で働く人から届いています。", scenarioKind: "fictional", theme: "暑さから命と学びを守る", focus: { 3: 5, 4: 3, 11: 4, 13: 4 } },
+  { year: 2023, quarter: 2, chapter: "第5章 気候と暮らし", decisionType: "政策", headline: "電気をつくる、使う、分け合う", context: "電気代と気候対策を、家庭だけに任せない仕組みが必要です。", scenarioKind: "fictional", theme: "地域で賢く電気を使う", focus: { 7: 6, 8: 2, 11: 2, 13: 5 } },
+  { year: 2023, quarter: 3, chapter: "第5章 気候と暮らし", decisionType: "地域との協働", headline: "川と海に、次の世代の居場所を", context: "大雨とごみの影響が、川辺と海辺の生き物に表れています。", scenarioKind: "fictional", theme: "水辺の自然を守り育てる", focus: { 6: 3, 12: 3, 14: 5, 15: 4 } },
+  { year: 2023, quarter: 4, chapter: "第5章 気候と暮らし", decisionType: "予算編成", headline: "見えない備えにお金を使う", context: "浸水や停電の被害を減らす工事は目立ちませんが、先送りもできます。", scenarioKind: "fictional", theme: "災害に強い土台を整える", focus: { 6: 3, 9: 4, 11: 6, 13: 3 } },
+  { year: 2024, quarter: 1, chapter: "第6章 デジタルと人", decisionType: "政策", headline: "AIを、だれのために使う？", context: "市役所でもAIの利用が始まります。便利さと説明できることを両立します。", scenarioKind: "fictional", theme: "説明できるデジタルの使い方", focus: { 9: 4, 10: 2, 16: 5, 17: 2 } },
+  { year: 2024, quarter: 2, chapter: "第6章 デジタルと人", decisionType: "地域との協働", headline: "スマホがなくても、置いていかない", context: "手続きが便利になる一方、使えない人の不安も大きくなっています。", scenarioKind: "fictional", theme: "誰でも使える相談と手続き", focus: { 4: 3, 9: 3, 10: 6, 16: 3 } },
+  { year: 2024, quarter: 3, chapter: "第6章 デジタルと人", decisionType: "政策", headline: "新しい仕事を、地域の力に", context: "デジタルの仕事が増えています。若者だけでなく、地域の誰が参加できるでしょうか。", scenarioKind: "fictional", theme: "地域で学び働けるデジタル", focus: { 4: 4, 5: 2, 8: 5, 9: 5 } },
+  { year: 2024, quarter: 4, chapter: "第6章 デジタルと人", decisionType: "議会との調整", headline: "データを公開する責任", context: "市のデータを開く提案に、期待と個人情報への心配が集まっています。", scenarioKind: "fictional", theme: "市民とつくるデータの約束", focus: { 9: 3, 16: 6, 17: 4 } },
+  { year: 2025, quarter: 1, chapter: "第7章 人口が変わるまち", decisionType: "政策", headline: "空き家を、困りごとの答えに", context: "空き家が増える一方、住まいと居場所を必要とする人がいます。", scenarioKind: "fictional", theme: "空き家を暮らしの力に変える", focus: { 1: 3, 10: 3, 11: 6, 12: 2 } },
+  { year: 2025, quarter: 2, chapter: "第7章 人口が変わるまち", decisionType: "地域との協働", headline: "多様な家族と、同じ地域で", context: "年齢、国籍、家族の形が違っても、安心して暮らせるまちを考えます。", scenarioKind: "fictional", theme: "違いを力にする地域", focus: { 3: 2, 5: 3, 10: 6, 16: 3 } },
+  { year: 2025, quarter: 3, chapter: "第7章 人口が変わるまち", decisionType: "予算編成", headline: "移動の自由を守る", context: "運転できない人が増える中、公共交通を続ける費用が課題です。", scenarioKind: "fictional", theme: "誰もが動けるまちを続ける", focus: { 3: 3, 8: 2, 10: 4, 11: 6, 13: 2 } },
+  { year: 2025, quarter: 4, chapter: "第7章 人口が変わるまち", decisionType: "地域との協働", headline: "地域の文化を、次の人へ", context: "祭りや方言、職人の技を残したいという声が集まっています。", scenarioKind: "fictional", theme: "地域の記憶を次世代につなぐ", focus: { 4: 2, 8: 3, 11: 4, 17: 3 } },
+  { year: 2026, quarter: 1, chapter: "第8章 ケアする社会", decisionType: "政策", headline: "家で暮らし続ける支え", context: "介護、障害、病気とともに暮らす人の相談が増えています。", scenarioKind: "fictional", theme: "安心して暮らし続けるケア", focus: { 3: 6, 5: 2, 8: 2, 10: 4 } },
+  { year: 2026, quarter: 2, chapter: "第8章 ケアする社会", decisionType: "地域との協働", headline: "ケアする人も、守られる？", context: "家族、支援職、地域の担い手が疲れ切らない仕組みが必要です。", scenarioKind: "fictional", theme: "ケアする人を支える", focus: { 3: 4, 5: 4, 8: 4, 10: 3 } },
+  { year: 2026, quarter: 3, chapter: "第8章 ケアする社会", decisionType: "政策", headline: "心の健康を、話せるまちに", context: "不安や孤立を一人で抱える人が、相談につながりにくくなっています。", scenarioKind: "fictional", theme: "心の健康を支えるつながり", focus: { 3: 6, 4: 2, 10: 4, 16: 2 } },
+  { year: 2026, quarter: 4, chapter: "第8章 ケアする社会", decisionType: "予算編成", headline: "見守りとプライバシーの境目", context: "見守り技術が進むほど、本人が選べることも大切になります。", scenarioKind: "fictional", theme: "尊厳を守る見守り", focus: { 3: 3, 9: 3, 10: 3, 16: 6 } },
+  { year: 2027, quarter: 1, chapter: "第9章 食べること、育てること", decisionType: "政策", headline: "近くで育て、近くで食べる", context: "気候の変化で食べ物の値段が揺れています。地域の食をどう守りますか？", scenarioKind: "fictional", theme: "地域の食を育て直す", focus: { 2: 6, 8: 3, 12: 3, 15: 2 } },
+  { year: 2027, quarter: 2, chapter: "第9章 食べること、育てること", decisionType: "地域との協働", headline: "食卓から始まる学び", context: "学校、農家、店が、食べることを通して子どもたちとつながろうとしています。", scenarioKind: "fictional", theme: "食べることから学ぶ", focus: { 2: 4, 4: 5, 12: 3, 17: 2 } },
+  { year: 2027, quarter: 3, chapter: "第9章 食べること、育てること", decisionType: "政策", headline: "水を分け合う夏", context: "少雨が続き、農業、家庭、自然のどれにも水が必要です。", scenarioKind: "fictional", theme: "限りある水を分け合う", focus: { 2: 3, 6: 6, 11: 2, 15: 3 } },
+  { year: 2027, quarter: 4, chapter: "第9章 食べること、育てること", decisionType: "予算編成", headline: "豊かさを数字だけで測らない", context: "経済の数字は伸びています。けれど、暮らしの実感は地域ごとに違います。", scenarioKind: "fictional", theme: "暮らしの豊かさを見える化する", focus: { 1: 3, 8: 3, 10: 5, 16: 4 } },
+  { year: 2028, quarter: 1, chapter: "第10章 備える未来", decisionType: "危機への備え", headline: "複合する災害に備える", context: "大雨、停電、暑さが重なる想定で、地域の備えを見直します。", scenarioKind: "fictional", theme: "いくつもの危機に備える", focus: { 3: 4, 7: 3, 11: 6, 13: 4 } },
+  { year: 2028, quarter: 2, chapter: "第10章 備える未来", decisionType: "地域との協働", headline: "助け合いを、日常にする", context: "非常時だけではない、顔の見えるつながりをどう育てますか？", scenarioKind: "fictional", theme: "日常から支え合う", focus: { 3: 3, 10: 4, 11: 3, 16: 5 } },
+  { year: 2028, quarter: 3, chapter: "第10章 備える未来", decisionType: "政策", headline: "自然に学ぶ防災", context: "コンクリートだけでなく、森や湿地の力を生かす案が出ています。", scenarioKind: "fictional", theme: "自然と一緒に災害を減らす", focus: { 6: 2, 11: 4, 13: 4, 15: 6 } },
+  { year: 2028, quarter: 4, chapter: "第10章 備える未来", decisionType: "予算編成", headline: "長い目で見る予算", context: "今の便利さと、十年後の安全。どちらにも理由のある予算案です。", scenarioKind: "fictional", theme: "未来へ続く予算を選ぶ", focus: { 9: 3, 11: 4, 12: 3, 16: 3 } },
+  { year: 2029, quarter: 1, chapter: "第11章 みんなで決める", decisionType: "議会との調整", headline: "意見が割れた時の決め方", context: "大きな開発計画をめぐり、まちの意見が二つに割れています。", scenarioKind: "fictional", theme: "違う意見をつなぐ", focus: { 10: 3, 11: 3, 16: 6, 17: 3 } },
+  { year: 2029, quarter: 2, chapter: "第11章 みんなで決める", decisionType: "地域との協働", headline: "若い世代に、決める席を", context: "2030年の先を生きる若い世代が、計画づくりへの参加を求めています。", scenarioKind: "fictional", theme: "若い世代と意思決定する", focus: { 4: 4, 10: 3, 16: 5, 17: 3 } },
+  { year: 2029, quarter: 3, chapter: "第11章 みんなで決める", decisionType: "政策", headline: "地域の企業と、地球の約束", context: "仕事を守りながら、環境への責任を果たす道を企業と探ります。", scenarioKind: "fictional", theme: "仕事と地球の約束を両立する", focus: { 7: 3, 8: 5, 9: 4, 12: 4, 13: 4 } },
+  { year: 2029, quarter: 4, chapter: "第11章 みんなで決める", decisionType: "予算編成", headline: "2030年の前夜", context: "これまでの選択を振り返り、最後の一年に何を集中させるか決めます。", scenarioKind: "fictional", theme: "最後の一年へ力を集める", focus: { 1: 2, 3: 2, 10: 3, 16: 4, 17: 4 } },
+  { year: 2030, quarter: 1, chapter: "第12章 2030年の窓", decisionType: "政策", headline: "残された課題を、誰と見る？", context: "17の目標を前に、まだ届いていない声を探す一年が始まります。", scenarioKind: "fictional", theme: "取り残された課題を見つける", focus: { 1: 4, 3: 3, 10: 5, 16: 3 } },
+  { year: 2030, quarter: 2, chapter: "第12章 2030年の窓", decisionType: "地域との協働", headline: "市民が描く、次の景色", context: "これまでの成果と不足を、数字だけでなくまちの景色から振り返ります。", scenarioKind: "fictional", theme: "市民と次の景色を描く", focus: { 4: 3, 11: 4, 16: 4, 17: 5 } },
+  { year: 2030, quarter: 3, chapter: "第12章 2030年の窓", decisionType: "予算編成", headline: "達成を急ぐか、土台を残すか", context: "目標の期限が近づきました。見える成果と、続く仕組みのどちらを重視しますか？", scenarioKind: "fictional", theme: "続く仕組みを未来に残す", focus: { 8: 2, 9: 3, 12: 3, 16: 4, 17: 4 } },
+  { year: 2030, quarter: 4, chapter: "第12章 2030年の窓", decisionType: "章末判断", headline: "2030年の窓から、未来を見る", context: "あなたの選択で変わったもの、まだ変わらないもの。市民と一緒に次の約束を結びます。", scenarioKind: "fictional", theme: "次の世代へ約束を渡す", focus: { 3: 3, 10: 4, 11: 3, 13: 3, 16: 4, 17: 6 } },
+];
+
+const futureActions = (seed: FutureSeed) => {
+  const lowerPriority = seed.pressure ?? {};
+  const focusGoals = seed.focus;
+  return [
+    {
+      id: `future-${seed.year}-q${seed.quarter}-listen`,
+      title: `身近な人と「${seed.theme}」を進める`,
+      description: "相談窓口や地域の居場所を増やし、困りごとを早く見つけます。",
+      tradeoff: "安心は広がりますが、目に見える設備や成長には時間がかかります。",
+      audience: "困りごとを抱える住民・地域団体",
+      timing: "すぐ" as const,
+      resultStory: "小さな相談の声が、市役所と地域へ届き始めました。次は、参加できなかった人にも届く方法を探します。",
+      effects: { budget: -2, trust: 4, goals: focusGoals },
+    },
+    {
+      id: `future-${seed.year}-q${seed.quarter}-build`,
+      title: `設備と仕組みに大きく投資する`,
+      description: "必要な施設、道具、デジタルの仕組みをまとめて整えます。",
+      tradeoff: "変化を急げますが、予算が大きく、使いこなせない人が残る心配があります。",
+      audience: "公共施設・地域企業・利用者",
+      timing: "あとから" as const,
+      resultStory: "新しい設備と仕組みの準備が始まりました。使う人の声を取り入れ続けることが、次の課題です。",
+      effects: {
+        budget: -11,
+        economy: 4,
+        trust: -1,
+        // 急いで整備する道は、参加の時間や環境への配慮が足りなくなる危険も残す。
+        goals: {
+          ...Object.fromEntries(Object.entries(focusGoals).map(([id, value]) => [id, Math.max(1, Math.round(value / 2))])),
+          ...lowerPriority,
+          10: (focusGoals[10] ?? 0) - 2,
+          13: (focusGoals[13] ?? 0) - 2,
+        },
+      },
+    },
+    {
+      id: `future-${seed.year}-q${seed.quarter}-partner`,
+      title: `地域の仲間と小さく試して育てる`,
+      description: "住民、学校、店、企業が役割を分け、地区ごとに試します。",
+      tradeoff: "広がるまで時間はかかりますが、地域に合う方法を直しながら続けられます。",
+      audience: "地域の住民・学校・店・企業",
+      timing: "あとから" as const,
+      resultStory: "地域の仲間が小さな実験を始めました。うまくいった地区だけで終わらせず、ほかの地域と学び合う準備が進んでいます。",
+      effects: { budget: -8, economy: 1, trust: 3, goals: { ...Object.fromEntries(Object.entries(focusGoals).map(([id, value]) => [id, Math.max(1, Math.round(value * .75))])), 17: (focusGoals[17] ?? 0) + 2 } },
+    },
+  ];
+};
+
+const futureTurns: Turn[] = futureSeeds.map((seed) => ({
+  id: `${seed.year}-q${seed.quarter}`,
+  label: `${seed.year}年 第${seed.quarter}四半期`,
+  chapter: seed.chapter,
+  decisionType: seed.decisionType,
+  headline: seed.headline,
+  context: seed.context,
+  scenarioKind: seed.scenarioKind,
+  actions: futureActions(seed),
+}));
+
+export const turns: Turn[] = [...earlyTurns, ...futureTurns];

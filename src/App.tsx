@@ -295,7 +295,10 @@ function App() {
                 <span>政策効果の数値は、現実の予測ではなくゲーム上の仮定です。</span>
                 {currentTurn.source && <a href={currentTurn.source.url} target="_blank" rel="noreferrer">出典：{currentTurn.source.title}（確認日 {currentTurn.source.checkedAt}）</a>}
               </div>
-              <blockquote className="adviser"><strong>{advisers[state.turnIndex].name} · {advisers[state.turnIndex].role}</strong><p>「{advisers[state.turnIndex].quote}」</p><small>登場人物は創作です</small></blockquote>
+              {(() => {
+                const adviser = advisers[state.turnIndex % advisers.length];
+                return <blockquote className="adviser"><strong>{adviser.name} · {adviser.role}</strong><p>「{adviser.quote}」</p><small>登場人物は創作です</small></blockquote>;
+              })()}
               <div className="actions">
                 {currentTurn.actions.map((action) => {
                   const plan = implementationPlans[action.id];

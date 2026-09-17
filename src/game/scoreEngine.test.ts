@@ -21,7 +21,7 @@ describe("score engine", () => {
     expect(next.history).toHaveLength(1);
   });
 
-  it("第2章までの全17ターンを完走する", () => {
+  it("2030年までの全61ターンを完走する", () => {
     let state = createInitialState();
     turns.forEach((turn) => {
       const action = turn.actions.find(
@@ -31,7 +31,7 @@ describe("score engine", () => {
       state = applyAction(state, action!, turn.label, turns.length);
     });
     expect(state.completed).toBe(true);
-    expect(state.turnIndex).toBe(17);
+    expect(state.turnIndex).toBe(61);
   });
 
   it("starts with an average SDGs score of 50", () => {

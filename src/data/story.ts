@@ -1,4 +1,5 @@
 import type { PledgeId } from "../game/types";
+import { turns } from "./turns";
 
 export const pledges: { id: PledgeId; title: string; statement: string; focus: string; cost: string }[] = [
   {
@@ -67,7 +68,7 @@ export const recurringCast = [
   },
 ] as const;
 
-export const turnSignals: Record<string, { label: string; text: string; level: "quiet" | "rising" | "urgent" }> = {
+const baseTurnSignals: Record<string, { label: string; text: string; level: "quiet" | "rising" | "urgent" }> = {
   "2015-q4": { label: "世界から届いた約束", text: "17の目標が掲げられ、市民は最初の一歩を見ています。", level: "quiet" },
   "2016-q1": { label: "駅から遠い地区の声", text: "通院や通学を諦める人が、少しずつ増えています。", level: "rising" },
   "2016-q2": { label: "職場の疲れ", text: "人手不足と長い労働時間が、同じ現場で重なっています。", level: "rising" },
@@ -86,6 +87,14 @@ export const turnSignals: Record<string, { label: string; text: string; level: "
   "2019-q3": { label: "伝わらない避難案内", text: "同じ地域で暮らしていても、必要な情報が届かない人がいます。", level: "urgent" },
   "2019-q4": { label: "静かな警告", text: "病院、学校、福祉の担当者が、未知の危機への連携不足を心配しています。", level: "urgent" },
 };
+
+export const turnSignals: Record<string, { label: string; text: string; level: "quiet" | "rising" | "urgent" }> = Object.fromEntries(
+  turns.map((turn) => [turn.id, baseTurnSignals[turn.id] ?? {
+    label: "2030年へ続く選択",
+    text: "この判断が、次の四半期のまちの景色と市民の声につながります。",
+    level: "rising" as const,
+  }]),
+);
 
 export const chapterBreaks: Record<number, { title: string; text: string; next: string }> = {
   9: {
