@@ -817,6 +817,13 @@ const futureTurns: Turn[] = futureSeeds.map((seed) => ({
   headline: seed.headline,
   context: seed.context,
   scenarioKind: seed.scenarioKind,
+  ...(seed.scenarioKind === "historical-frame" ? {
+    source: {
+      title: "WHO『Timeline of WHO's response to COVID-19』",
+      url: "https://www.who.int/emergencies/diseases/novel-coronavirus-2019/interactive-timeline",
+      checkedAt: "2026-09-17",
+    },
+  } : {}),
   actions: futureActions(seed),
 }));
 
