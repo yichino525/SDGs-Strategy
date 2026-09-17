@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { goals } from "./data/goals";
 import { chapterBreaks, pledges, turnSignals } from "./data/story";
 import { turns } from "./data/turns";
+import { actionIcon, pledgeIcons } from "./data/visuals";
 import { advisers, chains, cityMemories, delayed, implementationPlans } from "./data/strategy";
 import type { ImplementationOption } from "./data/strategy";
 import { buildEnding } from "./game/endingEngine";
@@ -34,6 +35,7 @@ function App() {
   const [showPrologue, setShowPrologue] = useState(state.history.length === 0);
   const [pendingAction, setPendingAction] = useState<Action | null>(null);
   const lastAction = state.report;
+  const lastActionIcon = actionIcon(state.history.at(-1)?.actionId ?? "");
   const [notice, setNotice] = useState("選択は自動的に保存されます");
   const currentTurn = turns[state.turnIndex];
   const activeTurn = state.report ? turns[Math.max(0, state.turnIndex - 1)] : (currentTurn ?? turns.at(-1));
@@ -123,7 +125,7 @@ function App() {
             <div className="prologue-person" />
           </div>
           <div className="prologue-copy">
-            <p className="chapter-label">PROLOGUE · 2015年 秋</p>
+            <p className="chapter-label">PROLOGUE · 2015年 秋 · はじめの物語</p>
             <h1>世界が未来を約束した日、<br />あなたの物語が始まる。</h1>
             <div className="story-text">
               <p>窓の外には、いつもと同じ日本のまちが広がっています。</p>
@@ -132,7 +134,7 @@ function App() {
             </div>
             <blockquote>「2030年の窓から、どんな景色を見たい？」</blockquote>
             <button className="start-button" onClick={() => { setShowPrologue(false); requestAnimationFrame(() => window.scrollTo({ top: 0 })); }}>
-              <span>最初の四半期へ</span><strong>物語を始める →</strong>
+              <span>えらんで、まちを変えよう</span><strong>物語を始める →</strong>
             </button>
           </div>
         </section>
@@ -144,12 +146,12 @@ function App() {
     return (
       <main className="pledge-page">
         <section className="pledge-intro">
-          <p className="chapter-label">YOUR PROMISE · 市長の公約</p>
+          <p className="chapter-label">YOUR PROMISE · 市長のやくそく</p>
           <h1>{state.history.length ? "これからの市政で、何を約束しますか？" : "最初に、市民へ一つ約束してください。"}</h1>
           <p>{state.history.length ? "これまでの選択はそのまま残ります。ここから先、どの価値を大切にするかを市民へ伝えます。" : "公約に絶対の正解はありません。何を優先し、どんな負担を引き受けるかが、あなたの物語になります。"}</p>
           <div className="pledge-options">
             {pledges.map((option, index) => <button key={option.id} className="pledge-card" onClick={() => choosePledge(option.id)}>
-              <span>公約 {String.fromCharCode(65 + index)}</span>
+              <div className="pledge-card-heading"><span className="pledge-symbol" aria-hidden="true">{pledgeIcons[option.id]}</span><span>公約 {String.fromCharCode(65 + index)}</span></div>
               <strong>{option.title}</strong>
               <p>{option.statement}</p>
               <small>重視：{option.focus}</small>
@@ -169,7 +171,7 @@ function App() {
         <div>
           <p className="eyebrow">SDGs STRATEGY · JAPAN 2015–2030</p>
           <h1>未来は、市長の選択から。</h1>
-          <p className="lead">架空都市「みらい市」で、限られた予算と17のゴールに向き合うゲームです。</p>
+          <p className="lead">架空都市「みらい市」で、アイデアを選びながら17のゴールに向き合うゲームです。</p>
         </div>
         <div className="turn-badge" aria-label={`進行 ${Math.min(state.turnIndex + 1, turns.length)} / ${turns.length}`}>
           <span>{activeTurn?.chapter ?? "第1章"}</span>
@@ -178,10 +180,10 @@ function App() {
       </header>
 
       <section className="dashboard" aria-label="現在の状態">
-        <ResourceCard label="予算" value={state.resources.budget} icon="¥" />
-        <ResourceCard label="経済" value={state.resources.economy} icon="↗" />
-        <ResourceCard label="社会的信頼" value={state.resources.trust} icon="◎" />
-        <ResourceCard label="SDGs平均" value={average} icon="17" />
+        <ResourceCard label="予算" value={state.resources.budget} icon="🪙" />
+        <ResourceCard label="経済" value={state.resources.economy} icon="🏪" />
+        <ResourceCard label="社会的信頼" value={state.resources.trust} icon="🤝" />
+        <ResourceCard label="SDGs平均" value={average} icon="🌍" />
       </section>
 
       <section className="promise-strip" aria-label="市長の公約">
@@ -199,9 +201,9 @@ function App() {
             </div>
             <div className="city-details" aria-hidden="true">
               <span className="scene-solar" />
-              <span className="scene-bus">●</span>
+              <span className="scene-bus">🚌</span>
               <span className="scene-tree" />
-              <span className="scene-lights">•••</span>
+              <span className="scene-lights">✨</span>
             </div>
             <div className="scene-copy">
               <p>窓の向こうのまち</p>
@@ -219,8 +221,8 @@ function App() {
               <p className="result-kicker">YOUR DECISION</p>
               <h2>選択が、まちを動かしました。</h2>
               <div className="chosen-action">
-                <span>今回の選択</span>
-                <strong>{lastAction.title}</strong>
+                <span className="chosen-action-icon" aria-hidden="true">{lastActionIcon}</span>
+                <div><span>今回の選択</span><strong>{lastAction.title}</strong></div>
                 <p>今回の政策と、これまでの投資を合わせた実際の変化です。</p>
               </div>
               {lastAction.income && <div className="income-note"><span>この四半期の市税収</span><strong>+{lastAction.income}</strong><small>経済が育つと、次の政策に使える収入も変わります。</small></div>}
@@ -269,7 +271,7 @@ function App() {
                   const cost = Math.max(0, -(option.effects.budget ?? 0));
                   return (
                     <button className="action-card implementation-card" key={option.id} disabled={state.resources.budget < cost} onClick={() => chooseImplementation(option)}>
-                      <span className="action-title">{option.title}</span>
+                      <div className="action-card-heading"><span className="action-symbol" aria-hidden="true">{actionIcon(pendingAction.id)}</span><span className="action-title">{option.title}</span></div>
                       <span>{option.description}</span>
                       <small>{option.tradeoff}</small>
                       <span className="action-preview"><span>届く人：{option.audience}</span><span>実感：{option.timing}</span><span>主な変化：{goalPreview(option.effects)}</span></span>
@@ -301,8 +303,7 @@ function App() {
                   const minimumCost = Math.min(...costs);
                   const costLabel = costs.length > 1 ? `${minimumCost}〜${Math.max(...costs)}` : `${minimumCost}`;
                   return <button className="action-card" key={action.id} disabled={state.resources.budget < minimumCost} onClick={() => chooseAction(action)}>
-                    <span className="action-index">選択肢 {String.fromCharCode(65 + currentTurn.actions.indexOf(action))}</span>
-                    <span className="action-title">{action.title}</span>
+                    <div className="action-card-heading"><span className="action-symbol" aria-hidden="true">{actionIcon(action.id)}</span><div><span className="action-index">選択肢 {String.fromCharCode(65 + currentTurn.actions.indexOf(action))}</span><span className="action-title">{action.title}</span></div></div>
                     <span>{action.description}</span>
                     <small>{action.tradeoff}</small>
                     <span className="action-preview"><span>届く人：{action.audience}</span><span>実感：{action.timing}</span><span>主な変化：{goalPreview(action.effects)}</span></span>
