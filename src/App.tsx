@@ -306,12 +306,18 @@ function App() {
               </div>
             </div>
           ) : !state.completed && currentTurn ? (
-            <div className="decision-panel">
+            <div className="decision-panel event-panel">
               {isChapterStart && <div className="chapter-opening"><span>NEW CHAPTER</span><strong>{currentTurn.chapter}</strong><p>これまでの選択を引き継ぎ、次の時代へ進みます。</p></div>}
-              <div className="turn-heading"><div><p className="turn-label">{currentTurn.label}</p><span className="decision-type">{currentTurn.decisionType}</span></div><span>選択 {state.turnIndex + 1} / {turns.length}</span></div>
-              <p className="chapter-progress">{currentTurn.chapter}</p>
-              <h2>{currentTurn.headline}</h2>
-              <p>{currentTurn.context}</p>
+              <section className="event-stage" aria-label="今回のイベント">
+                <div className="event-emblem" aria-hidden="true">{actionIcon(currentTurn.actions[0]?.id ?? "")}</div>
+                <div className="event-main">
+                  <div className="turn-heading"><div><p className="turn-label">EVENT {String(state.turnIndex + 1).padStart(2, "0")}</p><span className="decision-type">{currentTurn.decisionType}</span></div><span>{currentTurn.label}</span></div>
+                  <p className="chapter-progress">{currentTurn.chapter}</p>
+                  <h2>{currentTurn.headline}</h2>
+                  <p>{currentTurn.context}</p>
+                </div>
+                <div className="event-counter"><span>TURN</span><strong>{state.turnIndex + 1}</strong><small>/ {turns.length}</small></div>
+              </section>
               {signal && <div className={`turn-signal signal-${signal.level}`}><span>まちの気配 · {signal.label}</span><p>{signal.text}</p></div>}
               <div className="scenario-note">
                 <strong>{currentTurn.scenarioKind === "historical-frame" ? "史実を背景にした仮想シナリオ" : "ゲーム用の仮想シナリオ"}</strong>
@@ -322,14 +328,16 @@ function App() {
                 const adviser = advisers[state.turnIndex % advisers.length];
                 return <blockquote className="adviser"><strong>{adviser.name} · {adviser.role}</strong><p>「{adviser.quote}」</p><small>登場人物は創作です</small></blockquote>;
               })()}
-              <div className="actions">
+              <p className="choice-call">どの作戦で、まちの未来を育てる？</p>
+              <div className="actions action-deck">
                 {currentTurn.actions.map((action) => {
                   const plan = implementationPlans[action.id];
                   const costs = plan ? plan.options.map((option) => Math.max(0, -(option.effects.budget ?? 0))) : [Math.max(0, -(action.effects.budget ?? 0))];
                   const minimumCost = Math.min(...costs);
                   const costLabel = costs.length > 1 ? `${minimumCost}〜${Math.max(...costs)}` : `${minimumCost}`;
                   return <button className="action-card" key={action.id} disabled={state.resources.budget < minimumCost} onClick={() => chooseAction(action)}>
-                    <div className="action-card-heading"><span className="action-symbol" aria-hidden="true">{actionIcon(action.id)}</span><div><span className="action-index">選択肢 {String.fromCharCode(65 + currentTurn.actions.indexOf(action))}</span><span className="action-title">{action.title}</span></div></div>
+                    <span className="choice-ribbon">CHOICE {String.fromCharCode(65 + currentTurn.actions.indexOf(action))}</span>
+                    <div className="action-card-heading"><span className="action-symbol" aria-hidden="true">{actionIcon(action.id)}</span><div><span className="action-index">作戦 {String.fromCharCode(65 + currentTurn.actions.indexOf(action))}</span><span className="action-title">{action.title}</span></div></div>
                     <span>{action.description}</span>
                     <small>{action.tradeoff}</small>
                     <span className="skill-preview">{skillImpact(action.effects).map((skill) => <i key={skill.id} className={skill.value > 0 ? "up" : "down"}>{skill.icon} {skill.label} {formatDelta(skill.value)}</i>)}</span>
