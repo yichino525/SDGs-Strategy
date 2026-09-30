@@ -36,6 +36,23 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .turn-badge span { max-width: 150px; }
 
 .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.player-card { display: grid; grid-template-columns: auto minmax(150px, .8fr) auto minmax(340px, 2fr); gap: 15px; align-items: center; margin: 0 0 18px; padding: 15px 18px; border: 3px solid #ffe274; border-radius: 22px; background: linear-gradient(105deg, #263f91, #4a58bc 52%, #253a89); box-shadow: 0 8px 0 rgba(7, 18, 56, .23), inset 0 1px rgba(255,255,255,.24); }
+.player-badge { display: grid; width: 66px; height: 66px; place-items: center; border: 3px solid #fff2a8; border-radius: 50%; background: #ff8a50; color: #fff; box-shadow: inset 0 -5px rgba(126, 48, 49, .2); }
+.player-badge span { align-self: end; font-size: .65rem; font-weight: 900; line-height: 1; }
+.player-badge strong { align-self: start; font-size: 2rem; line-height: 1.05; }
+.player-copy p, .player-score span, .growth-result p { margin: 0; color: #ffec8b; font-size: .66rem; font-weight: 900; letter-spacing: .12em; }
+.player-copy strong, .player-copy small { display: block; }
+.player-copy strong { margin: 3px 0; font-size: 1.05rem; }
+.player-copy small { color: #d7e5ff; font-size: .72rem; }
+.player-score { min-width: 95px; text-align: right; }
+.player-score strong { margin: 2px 2px 0 0; color: #fff; font-size: 2rem; line-height: 1; }
+.player-score small { color: #d7e5ff; font-size: .7rem; }
+.skill-bars { display: grid; gap: 5px; }
+.skill-bar { display: grid; grid-template-columns: 20px 68px 1fr 28px; align-items: center; gap: 6px; }
+.skill-bar small { color: #fff; font-size: .68rem; font-weight: 800; }
+.skill-bar b { color: #fff5b5; font-size: .77rem; text-align: right; }
+.skill-meter { height: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,.4); border-radius: 99px; background: #142864; }
+.skill-meter i { display: block; height: 100%; border-radius: inherit; transition: width .4s ease; }
 .resource-card { display: flex; align-items: center; gap: 13px; padding: 15px 18px; border: 2px solid rgba(255,255,255,.3); border-radius: 18px; background: linear-gradient(135deg, rgba(39, 73, 139, .96), rgba(25, 49, 103, .96)); box-shadow: 0 7px 0 rgba(7, 18, 56, .24), inset 0 1px rgba(255,255,255,.14); }
 .resource-card > span { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 14px; background: rgba(255,255,255,.18); font-size: 1.32rem; }
 .resource-card small, .resource-card strong { display: block; }
@@ -120,6 +137,10 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .action-card > span:not(.action-title) { color: #d7e8f2; }
 .action-card small { color: #82a8a3; line-height: 1.45; }
 .action-card b { margin-top: 3px; color: #8debd5; font-size: .78rem; }
+.skill-preview { display: flex; flex-wrap: wrap; gap: 5px; }
+.skill-preview i, .growth-list span { padding: 5px 8px; border-radius: 999px; font-size: .7rem; font-style: normal; font-weight: 800; }
+.skill-preview .up, .growth-list .up { background: #193f37; color: #8ff2c2; }
+.skill-preview .down, .growth-list .down { background: #563643; color: #ffb2ba; }
 .notice { margin: 0; padding: 0 38px 24px; color: #7ca5a1; font-size: .8rem; }
 .ending { min-height: 310px; display: flex; flex-direction: column; justify-content: center; }
 .ending-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 18px 0 8px; }
@@ -146,6 +167,9 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .chosen-action span { color: #87aaa6; font-size: .72rem; }
 .chosen-action strong { margin-top: 4px; color: #fff; font-size: 1.2rem; }
 .chosen-action p { margin: 8px 0 0; color: #acc7c2; line-height: 1.55; }
+.growth-result { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin: -6px 0 22px; padding: 14px 16px; border: 2px solid #897fe2; border-radius: 15px; background: linear-gradient(110deg, #2e3378, #453d89); }
+.growth-result strong { display: block; margin-top: 4px; color: #fff; }
+.growth-list { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
 .income-note { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: -10px 0 22px; padding: 13px 15px; border: 1px solid #42666b; border-radius: 11px; background: #0d2c35; }
 .income-note span { color: #a9c7c1; font-size: .78rem; }
 .income-note strong { color: #75edbf; }
@@ -244,6 +268,8 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 
 @media (max-width: 900px) {
   .dashboard { grid-template-columns: repeat(2, 1fr); }
+  .player-card { grid-template-columns: auto 1fr auto; }
+  .skill-bars { grid-column: 1 / -1; }
   .game-layout { grid-template-columns: 1fr; }
   .goals-panel { order: 2; }
   .prologue { grid-template-columns: 1fr; }
@@ -258,6 +284,15 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .turn-badge { min-width: 92px; padding: 11px; }
   .lead { font-size: .9rem; }
   .dashboard { gap: 8px; }
+  .player-card { grid-template-columns: auto 1fr; gap: 10px; padding: 13px; }
+  .player-badge { width: 56px; height: 56px; grid-row: span 2; }
+  .player-badge strong { font-size: 1.6rem; }
+  .player-score { min-width: 0; text-align: left; }
+  .player-score strong { font-size: 1.55rem; }
+  .skill-bars { grid-column: 1 / -1; }
+  .skill-bar { grid-template-columns: 20px 62px 1fr 26px; }
+  .growth-result { display: grid; gap: 10px; }
+  .growth-list { justify-content: flex-start; }
   .promise-strip { grid-template-columns: 1fr; }
   .promise-strip > div:first-child { grid-row: auto; }
   .resource-card { padding: 11px; gap: 8px; }

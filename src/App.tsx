@@ -9,6 +9,7 @@ import { buildEnding } from "./game/endingEngine";
 import { alignProgress, applyAction, averageGoalScore, createInitialState } from "./game/scoreEngine";
 import { clearSave, loadGame, saveGame } from "./game/storage";
 import { buildWitnessReaction, pledgeProgress } from "./game/storyEngine";
+import { playerLevel, playerSkills, playerTitle, skillImpact, totalSdgsPoints } from "./game/playerProfile";
 import type { Action, Effects, GameState, PledgeId } from "./game/types";
 
 const ResourceCard = ({ label, value, icon }: { label: string; value: number; icon: string }) => (
@@ -42,6 +43,10 @@ function App() {
   const activeChapterNumber = activeTurn?.chapter.split(" ")[0] ?? "章";
   const isChapterStart = Boolean(currentTurn && state.turnIndex > 0 && turns[state.turnIndex - 1]?.chapter !== currentTurn.chapter);
   const average = useMemo(() => averageGoalScore(state), [state]);
+  const skills = useMemo(() => playerSkills(state), [state]);
+  const sdgsPoints = useMemo(() => totalSdgsPoints(state), [state]);
+  const level = useMemo(() => playerLevel(state), [state]);
+  const title = useMemo(() => playerTitle(state), [state]);
   const lowest = useMemo(() => Math.min(...Object.values(state.goals)), [state]);
   const ending = useMemo(() => buildEnding(state, goals), [state]);
   const promiseProgress = useMemo(() => pledgeProgress(state), [state]);
@@ -179,6 +184,17 @@ function App() {
         </div>
       </header>
 
+      <section className="player-card" aria-label="あなたのSDGs育成カード">
+        <div className="player-badge" aria-hidden="true"><span>LV.</span><strong>{level}</strong></div>
+        <div className="player-copy"><p>SDGs PLAYER</p><strong>{title}</strong><small>選択で5つの力を育てよう</small></div>
+        <div className="player-score"><span>SDGs POINT</span><strong>{sdgsPoints}</strong><small>/ 500</small></div>
+        <div className="skill-bars">
+          {skills.map((skill) => <div className="skill-bar" key={skill.id}>
+            <span aria-hidden="true">{skill.icon}</span><small>{skill.label}</small><div className="skill-meter"><i style={{ width: `${skill.score}%`, background: skill.color }} /></div><b>{skill.score}</b>
+          </div>)}
+        </div>
+      </section>
+
       <section className="dashboard" aria-label="現在の状態">
         <ResourceCard label="予算" value={state.resources.budget} icon="🪙" />
         <ResourceCard label="経済" value={state.resources.economy} icon="🏪" />
@@ -225,6 +241,13 @@ function App() {
                 <div><span>今回の選択</span><strong>{lastAction.title}</strong></div>
                 <p>今回の政策と、これまでの投資を合わせた実際の変化です。</p>
               </div>
+              <section className="growth-result" aria-label="今回育ったSDGsの力">
+                <div><p>GROWTH RESULT</p><strong>今回の成長</strong></div>
+                <div className="growth-list">
+                  {skillImpact(lastAction.effects).map((skill) => <span key={skill.id} className={skill.value > 0 ? "up" : "down"}>{skill.icon} {skill.label} {formatDelta(skill.value)}</span>)}
+                  {skillImpact(lastAction.effects).length === 0 && <span>今回、5つの力に直接の変化はありません。</span>}
+                </div>
+              </section>
               {lastAction.income && <div className="income-note"><span>この四半期の市税収</span><strong>+{lastAction.income}</strong><small>経済が育つと、次の政策に使える収入も変わります。</small></div>}
               <article className="newspaper">
                 <p>まちの未来新聞 · 第{state.turnIndex}号 · 架空のニュース</p>
@@ -309,6 +332,7 @@ function App() {
                     <div className="action-card-heading"><span className="action-symbol" aria-hidden="true">{actionIcon(action.id)}</span><div><span className="action-index">選択肢 {String.fromCharCode(65 + currentTurn.actions.indexOf(action))}</span><span className="action-title">{action.title}</span></div></div>
                     <span>{action.description}</span>
                     <small>{action.tradeoff}</small>
+                    <span className="skill-preview">{skillImpact(action.effects).map((skill) => <i key={skill.id} className={skill.value > 0 ? "up" : "down"}>{skill.icon} {skill.label} {formatDelta(skill.value)}</i>)}</span>
                     <span className="action-preview"><span>届く人：{action.audience}</span><span>実感：{action.timing}</span><span>主な変化：{goalPreview(action.effects)}</span></span>
                     <span className="policy-hint">必要予算 {costLabel} ／ 現在 {state.resources.budget}</span>
                     {delayed[action.id] && <span className="policy-hint">◷ 2四半期後にも効果：{delayed[action.id].title}</span>}
