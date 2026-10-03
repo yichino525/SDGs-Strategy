@@ -25,4 +25,9 @@ describe("セーブデータ検証", () => {
     const state = { ...createInitialState(), pledge: "unknown" };
     expect(parseGame(JSON.stringify(state))).toBeNull();
   });
+
+  it("大型プロジェクトの記録を復元する", () => {
+    const state = { ...createInitialState(), specialProjects: [{ id: "future-transit", title: "未来型公共交通計画", outcome: "success" as const, turnIndex: 8, chance: 54, roll: 31 }] };
+    expect(parseGame(JSON.stringify(state))).toEqual(state);
+  });
 });

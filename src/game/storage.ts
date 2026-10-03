@@ -30,6 +30,15 @@ const hasValidCoreState = (value: unknown): value is GameState => {
   if (value.gameOver !== undefined && (!isRecord(value.gameOver)
     || !["election", "disaster", "fiscal"].includes(value.gameOver.reason as string)
     || ![value.gameOver.title, value.gameOver.text, value.gameOver.advice].every((item) => typeof item === "string"))) return false;
+  if (value.specialProjects !== undefined && (!Array.isArray(value.specialProjects) || !value.specialProjects.every((item) =>
+    isRecord(item) && typeof item.id === "string" && typeof item.title === "string"
+    && ["success", "failure", "declined"].includes(item.outcome as string) && Number.isInteger(item.turnIndex)
+    && (item.chance === undefined || typeof item.chance === "number") && (item.roll === undefined || typeof item.roll === "number")))) return false;
+  if (value.specialProjectReport !== undefined && (!isRecord(value.specialProjectReport)
+    || typeof value.specialProjectReport.projectId !== "string" || typeof value.specialProjectReport.title !== "string"
+    || !["success", "failure"].includes(value.specialProjectReport.outcome as string)
+    || typeof value.specialProjectReport.chance !== "number" || typeof value.specialProjectReport.roll !== "number"
+    || typeof value.specialProjectReport.story !== "string" || !isEffects(value.specialProjectReport.effects))) return false;
   return true;
 };
 

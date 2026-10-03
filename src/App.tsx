@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { goals } from "./data/goals";
 import { chapterBreaks, pledges, turnSignals } from "./data/story";
 import { turns } from "./data/turns";
+import { specialProjects } from "./data/specialProjects";
 import { actionIcon, pledgeIcons } from "./data/visuals";
 import { advisers, chains, cityMemories, delayed, implementationPlans } from "./data/strategy";
 import type { ImplementationOption } from "./data/strategy";
@@ -11,6 +12,7 @@ import { clearSave, loadGame, saveGame } from "./game/storage";
 import { buildWitnessReaction, pledgeProgress } from "./game/storyEngine";
 import { playerLevel, playerSkills, playerTitle, skillImpact, totalSdgsPoints } from "./game/playerProfile";
 import { buildAnnualReview, cityRank, riskWarnings } from "./game/progression";
+import { attemptSpecialProject, declineSpecialProject, nextSpecialProject, projectChance } from "./game/specialProjectEngine";
 import type { Action, Effects, GameState, PledgeId } from "./game/types";
 
 const ResourceCard = ({ label, value, icon }: { label: string; value: number; icon: string }) => (
@@ -61,6 +63,7 @@ function App() {
   const annualReview = useMemo(() => lastAction ? buildAnnualReview(state, activeTurn?.id) : undefined, [activeTurn?.id, lastAction, state]);
   const warnings = useMemo(() => riskWarnings(state, currentTurn), [currentTurn, state]);
   const rank = useMemo(() => cityRank(state), [state]);
+  const specialProject = useMemo(() => state.report || state.specialProjectReport || state.completed ? undefined : nextSpecialProject(state), [state]);
   const sceneYear = Number(activeTurn?.id.slice(0, 4) ?? 2015);
   const cityEra = sceneYear < 2020 ? "start" : sceneYear < 2024 ? "recovery" : sceneYear < 2028 ? "transform" : "future";
 
@@ -106,6 +109,25 @@ function App() {
 
   const continueGame = () => {
     setState((previous) => ({ ...previous, report: undefined }));
+    scrollToDecision();
+  };
+
+  const challengeSpecialProject = () => {
+    if (!specialProject) return;
+    setState((previous) => attemptSpecialProject(previous, specialProject));
+    setNotice(`大型プロジェクト「${specialProject.title}」に挑戦しました`);
+    scrollToDecision();
+  };
+
+  const passSpecialProject = () => {
+    if (!specialProject) return;
+    setState((previous) => declineSpecialProject(previous, specialProject));
+    setNotice(`「${specialProject.title}」は今回は見送りました`);
+  };
+
+  const closeSpecialProjectReport = () => {
+    setState((previous) => ({ ...previous, specialProjectReport: undefined }));
+    setNotice("通常の市政へ戻ります");
     scrollToDecision();
   };
 
@@ -256,6 +278,26 @@ function App() {
               </div>
               <button className="primary-button wide" onClick={restart}>新しい市政に挑戦する</button>
             </div>
+          ) : state.specialProjectReport ? (
+            <div className={`decision-panel special-result special-${state.specialProjectReport.outcome}`} aria-live="polite">
+              <div className="special-result-mark" aria-hidden="true">{state.specialProjectReport.outcome === "success" ? "🏆" : "🧭"}</div>
+              <p className="special-kicker">SPECIAL PROJECT · RESULT</p>
+              <h2>{state.specialProjectReport.outcome === "success" ? "大型プロジェクト成功！" : "計画は、思うように進まなかった"}</h2>
+              <h3>{state.specialProjectReport.title}</h3>
+              <p>{state.specialProjectReport.story}</p>
+              <div className="chance-verdict"><span>成功率 {state.specialProjectReport.chance}%</span><strong>判定 {state.specialProjectReport.roll}</strong><b>{state.specialProjectReport.outcome === "success" ? "成功" : "失敗"}</b></div>
+              <div className="impact-grid">
+                {(["budget", "economy", "trust"] as const).map((key) => {
+                  const value = state.specialProjectReport?.effects[key];
+                  if (!value) return null;
+                  const labels = { budget: "予算", economy: "経済", trust: "社会的信頼" };
+                  return <div className={`impact ${value > 0 ? "positive" : "negative"}`} key={key}><span>{labels[key]}</span><strong>{formatDelta(value)}</strong></div>;
+                })}
+                {Object.entries(state.specialProjectReport.effects.goals).filter(([, value]) => value).map(([id, value]) => <div className={`impact ${(value ?? 0) > 0 ? "positive" : "negative"}`} key={id}><span>目標{id}・{goals.find((goal) => goal.id === Number(id))?.shortName}</span><strong>{formatDelta(value ?? 0)}</strong></div>)}
+              </div>
+              <p className="result-note">使った予算と信頼も含めた、プロジェクト全体の変化です。失敗しても、一部の経験はまちに残ります。</p>
+              <button className="primary-button wide" onClick={closeSpecialProjectReport}>通常の市政へ戻る →</button>
+            </div>
           ) : lastAction ? (
             <div className="decision-panel result-panel" aria-live="polite">
               <p className="result-kicker">YOUR DECISION</p>
@@ -309,6 +351,28 @@ function App() {
               <button className="primary-button wide" onClick={continueGame}>
                 {state.completed ? `${activeChapterNumber}の結果を見る` : "次の四半期へ進む"} →
               </button>
+            </div>
+          ) : specialProject ? (
+            <div className="decision-panel special-project-panel">
+              <div className="special-project-heading">
+                <span className="special-project-icon" aria-hidden="true">{specialProject.icon}</span>
+                <div><p className="special-kicker">BIG CHANCE · 大型プロジェクト提案</p><h2>{specialProject.title}</h2><strong>{specialProject.catchphrase}</strong></div>
+              </div>
+              <p>{specialProject.description}</p>
+              <div className="special-stakes">
+                <div><span>成功率</span><strong>{projectChance(state, specialProject)}%</strong><small>これまでの政策で変化</small></div>
+                <div><span>使う予算</span><strong>-{specialProject.cost.budget}</strong><small>現在 {state.resources.budget}</small></div>
+                <div><span>使う信頼</span><strong>-{specialProject.cost.trust}</strong><small>現在 {state.resources.trust}</small></div>
+              </div>
+              <section className="preparation-list"><h3>成功率を上げる準備</h3>{specialProject.bonusActions.map((item) => {
+                const ready = state.history.some((entry) => entry.actionId === item.id);
+                return <span className={ready ? "ready" : "missing"} key={item.id}>{ready ? "✓" : "○"} {item.label}{ready ? "（+12%）" : "（未達成）"}</span>;
+              })}</section>
+              <div className="risk-box"><strong>⚠ 失敗したときの危険</strong><p>{specialProject.risk}</p><small>結果は現在の成功率と、セーブごとに固定される判定で決まります。</small></div>
+              <div className="special-actions">
+                <button className="special-challenge" onClick={challengeSpecialProject}><span>ハイリスク・ハイリターン</span><strong>この計画に挑戦する</strong></button>
+                <button className="special-pass" onClick={passSpecialProject}><span>機会は今回限り</span><strong>今回は見送る</strong></button>
+              </div>
             </div>
           ) : pendingAction && implementationPlan ? (
             <div className="decision-panel implementation-panel">
@@ -401,6 +465,13 @@ function App() {
         </section>
 
         <aside className="goals-panel">
+          <section className="project-progress" aria-label="大型プロジェクトの記録">
+            <p className="eyebrow">BIG PROJECTS</p><h3>未来を変える大計画</h3>
+            <div>{specialProjects.map((project) => {
+              const record = state.specialProjects?.find((item) => item.id === project.id);
+              return <span className={record?.outcome ?? "locked"} key={project.id} title={record ? `${record.title}：${record.outcome}` : `${project.minTurn + 1}ターン目以降に条件を満たすと出現`}><b>{record?.outcome === "success" ? "★" : record?.outcome === "failure" ? "!" : record?.outcome === "declined" ? "−" : "?"}</b>{project.icon}</span>;
+            })}</div><small>条件を満たすと、通常ターンの前に提案されます。</small>
+          </section>
           {(state.pending ?? []).length > 0 && <section className="future-panel"><p className="eyebrow">育っている投資</p>{state.pending?.map(item => <p key={item.title}><strong>あと{item.due - state.turnIndex}四半期</strong><br />{item.title}</p>)}</section>}
           <div className="section-heading">
             <div>

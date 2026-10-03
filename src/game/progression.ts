@@ -7,7 +7,8 @@ const highRiskActions = new Set(["reserve-fund", "mass-tourism", "visible-projec
 
 const yearOf = (turnId: string) => Number(turnId.slice(0, 4));
 const resilience = (state: GameState) =>
-  Math.round(([3, 6, 11, 13] as const).reduce((sum, id) => sum + state.goals[id], 0) / 4);
+  Math.min(100, Math.round(([3, 6, 11, 13] as const).reduce((sum, id) => sum + state.goals[id], 0) / 4)
+    + (state.specialProjects?.some((item) => item.id === "mega-resilience" && item.outcome === "success") ? 20 : 0));
 
 export const cityRank = (state: GameState) => {
   const points = totalSdgsPoints(state);

@@ -262,6 +262,58 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .promise-result strong { margin-top: 4px; color: #fff3cf; }
 .promise-result p { margin: 8px 0 0; color: #d7d7c7; font-size: .8rem; line-height: 1.6; }
 
+.special-project-panel { position: relative; overflow: hidden; background: radial-gradient(circle at 100% 0%, rgba(255,202,91,.25), transparent 42%), linear-gradient(145deg, #372351, #132d43 70%); }
+.special-project-panel::before { content: "LIMITED CHANCE"; position: absolute; top: 23px; right: -43px; padding: 7px 52px; background: #ffca5b; color: #39250a; font-size: .62rem; font-weight: 1000; letter-spacing: .1em; transform: rotate(35deg); }
+.special-project-heading { display: flex; align-items: center; gap: 17px; padding-right: 50px; }
+.special-project-icon { display: grid; flex: 0 0 82px; width: 82px; height: 82px; place-items: center; border: 3px solid #ffe49c; border-radius: 24px; background: linear-gradient(145deg, #925a31, #6d3b72); font-size: 2.8rem; box-shadow: 0 8px 0 rgba(13,10,35,.25); }
+.special-kicker { margin: 0 0 7px !important; color: #ffd873 !important; font-size: .7rem !important; font-weight: 1000; letter-spacing: .15em; }
+.special-project-heading h2 { margin: 0 0 5px; color: #fff3bd; font-size: clamp(1.8rem, 4vw, 2.8rem); }
+.special-project-heading strong { color: #94ead3; }
+.special-project-panel > p { margin: 22px 0; color: #e2e4ea; font-size: .95rem; line-height: 1.75; }
+.special-stakes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 18px 0; }
+.special-stakes > div { display: grid; gap: 4px; padding: 15px; border: 1px solid #7d6796; border-radius: 14px; background: rgba(12,25,48,.68); }
+.special-stakes span { color: #bdb2cd; font-size: .7rem; font-weight: 800; }
+.special-stakes strong { color: #fff0a8; font-size: 1.7rem; }
+.special-stakes small { color: #9cb5bd; }
+.preparation-list { display: flex; flex-wrap: wrap; gap: 7px; margin: 18px 0; padding: 15px; border-radius: 13px; background: #172c47; }
+.preparation-list h3 { flex-basis: 100%; margin: 0 0 3px; color: #dce8ee; font-size: .8rem; }
+.preparation-list span { padding: 7px 9px; border-radius: 8px; font-size: .72rem; font-weight: 800; }
+.preparation-list .ready { background: #1b5949; color: #99f0c4; }
+.preparation-list .missing { background: #30384c; color: #a8afbc; }
+.risk-box { padding: 14px 16px; border: 1px solid #bf735f; border-left: 5px solid #ff987d; border-radius: 11px; background: #482c39; }
+.risk-box strong { color: #ffc1aa; }
+.risk-box p { margin: 5px 0; color: #f2e3e1; }
+.risk-box small { color: #c0a8a9; }
+.special-actions { display: grid; grid-template-columns: 1.35fr .65fr; gap: 10px; margin-top: 20px; }
+.special-actions button { display: grid; gap: 5px; min-height: 82px; padding: 14px 17px; border-radius: 14px; color: inherit; text-align: left; cursor: pointer; }
+.special-actions span { font-size: .67rem; font-weight: 800; }
+.special-actions strong { font-size: .95rem; }
+.special-challenge { border: 2px solid #ffe093; background: linear-gradient(135deg, #e88a37, #9d4662); box-shadow: 0 6px 0 #542946; }
+.special-challenge span { color: #fff0bf; }
+.special-challenge strong { color: #fff; }
+.special-pass { border: 1px solid #55717a; background: #19343e; }
+.special-pass span { color: #91aaa9; }
+.special-pass strong { color: #d9e7e4; }
+.special-result { text-align: center; background: radial-gradient(circle at 50% 0%, rgba(255,213,106,.22), transparent 48%); }
+.special-result.special-failure { background: radial-gradient(circle at 50% 0%, rgba(255,131,105,.18), transparent 48%); }
+.special-result-mark { display: grid; width: 90px; height: 90px; margin: 0 auto 14px; place-items: center; border: 4px solid #ffe191; border-radius: 50%; background: #594274; font-size: 3rem; }
+.special-result h2 { color: #fff0ae; }
+.special-result h3 { color: #8ce5cf; font-size: 1.1rem; }
+.special-result > p { max-width: 680px; margin-inline: auto; }
+.chance-verdict { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 18px 0; }
+.chance-verdict > * { padding: 8px 12px; border-radius: 9px; background: #183740; }
+.chance-verdict b { background: #f2c65d; color: #34230a; }
+.special-failure .chance-verdict b { background: #d76f65; color: #fff; }
+.project-progress { margin-bottom: 20px; padding: 15px; border: 1px solid #65567e; border-radius: 14px; background: linear-gradient(145deg, #2a2240, #12323b); }
+.project-progress h3 { margin: 4px 0 10px; color: #fff2bd; font-size: .9rem; }
+.project-progress > div { display: flex; gap: 7px; }
+.project-progress > div > span { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid #52636c; border-radius: 10px; background: #26333f; filter: grayscale(.8); position: relative; }
+.project-progress > div > span b { position: absolute; top: -5px; right: -4px; display: grid; width: 16px; height: 16px; place-items: center; border-radius: 50%; background: #5a6670; color: #fff; font-size: .6rem; }
+.project-progress > div > span.success { border-color: #ffd86e; background: #664e24; filter: none; }
+.project-progress > div > span.success b { background: #f5c94e; color: #37260b; }
+.project-progress > div > span.failure, .project-progress > div > span.declined { filter: none; opacity: .72; }
+.project-progress > small { display: block; margin-top: 10px; color: #99b0ad; line-height: 1.45; }
+
 .goals-panel { padding: 24px; }
 .section-heading { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
 .section-heading > span { padding: 6px 9px; border-radius: 8px; background: #12353d; color: #91b5b0; font-size: .72rem; }
@@ -376,6 +428,13 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .voices { grid-template-columns: 1fr; }
   .ending-summary { grid-template-columns: 1fr; }
   .ending-summary > div { min-height: 88px; }
+  .special-project-heading { align-items: flex-start; padding-right: 0; }
+  .special-project-icon { flex-basis: 62px; width: 62px; height: 62px; font-size: 2rem; }
+  .special-project-panel::before { display: none; }
+  .special-stakes { grid-template-columns: 1fr 1fr; }
+  .special-stakes > div:first-child { grid-column: 1 / -1; }
+  .special-actions { grid-template-columns: 1fr; }
+  .chance-verdict { flex-wrap: wrap; }
   .prologue-page { padding: 14px; }
   .prologue { border-radius: 20px; }
   .prologue-art { min-height: 240px; }

@@ -55,6 +55,25 @@ export type GameOver = {
   advice: string;
 };
 
+export type SpecialProjectRecord = {
+  id: string;
+  title: string;
+  outcome: "success" | "failure" | "declined";
+  turnIndex: number;
+  chance?: number;
+  roll?: number;
+};
+
+export type SpecialProjectReport = {
+  projectId: string;
+  title: string;
+  outcome: "success" | "failure";
+  chance: number;
+  roll: number;
+  story: string;
+  effects: Effects;
+};
+
 export type GameState = {
   report?: { title: string; stories: string[]; effects: Effects; income?: number };
   pending?: { due: number; title: string; effects: Effects }[];
@@ -66,4 +85,6 @@ export type GameState = {
   history: HistoryEntry[];
   completed: boolean;
   gameOver?: GameOver;
+  specialProjects?: SpecialProjectRecord[];
+  specialProjectReport?: SpecialProjectReport;
 };
