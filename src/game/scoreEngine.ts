@@ -2,6 +2,7 @@ import { goals } from "../data/goals";
 import { chains, delayed } from "../data/strategy";
 import type { Effects } from "./types";
 import type { Action, GameState, GoalId } from "./types";
+import { evaluateGameOver } from "./progression";
 
 export const clamp = (value: number, min = 0, max = 100) =>
   Math.min(max, Math.max(min, value));
@@ -21,7 +22,7 @@ export const quarterlyRevenue = (economy: number) =>
 // 体験期間が延びても、以前の最終地点から続きを遊べるようにする。
 export const alignProgress = (state: GameState, totalTurns: number): GameState => ({
   ...state,
-  completed: state.turnIndex >= totalTurns,
+  completed: Boolean(state.gameOver) || state.turnIndex >= totalTurns,
 });
 
 export const applyAction = (
@@ -29,6 +30,7 @@ export const applyAction = (
   action: Action,
   turnLabel: string,
   totalTurns: number,
+  turnId?: string,
 ): GameState => {
   if (state.completed || state.resources.budget + (action.effects.budget ?? 0) < 0) return state;
 
@@ -69,7 +71,7 @@ export const applyAction = (
   const actual: Effects = { goals: {} };
   for (const key of ["budget", "economy", "trust"] as const) actual[key] = resources[key] - state.resources[key];
   for (const goal of goals) actual.goals[goal.id] = nextGoals[goal.id] - state.goals[goal.id];
-  return {
+  const nextState: GameState = {
     ...state,
     pending: pending.filter(item => item.due > nextTurnIndex),
     report: { title: action.title, stories, effects: actual, income },
@@ -87,6 +89,8 @@ export const applyAction = (
       },
     ],
   };
+  const gameOver = evaluateGameOver(nextState, turnId);
+  return gameOver ? { ...nextState, gameOver, completed: true } : nextState;
 };
 
 export const averageGoalScore = (state: GameState) => {

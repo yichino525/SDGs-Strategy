@@ -10,6 +10,7 @@ import { alignProgress, applyAction, averageGoalScore, createInitialState } from
 import { clearSave, loadGame, saveGame } from "./game/storage";
 import { buildWitnessReaction, pledgeProgress } from "./game/storyEngine";
 import { playerLevel, playerSkills, playerTitle, skillImpact, totalSdgsPoints } from "./game/playerProfile";
+import { buildAnnualReview, riskWarnings } from "./game/progression";
 import type { Action, Effects, GameState, PledgeId } from "./game/types";
 
 const ResourceCard = ({ label, value, icon }: { label: string; value: number; icon: string }) => (
@@ -57,6 +58,10 @@ function App() {
   const implementationPlan = pendingAction ? implementationPlans[pendingAction.id] : undefined;
   const memories = useMemo(() => state.history.flatMap((entry) => cityMemories[entry.actionId] ? [cityMemories[entry.actionId]] : []), [state.history]);
   const sceneKinds = useMemo(() => new Set(memories.map((memory) => memory.kind)), [memories]);
+  const annualReview = useMemo(() => lastAction ? buildAnnualReview(state, activeTurn?.id) : undefined, [activeTurn?.id, lastAction, state]);
+  const warnings = useMemo(() => riskWarnings(state, currentTurn), [currentTurn, state]);
+  const sceneYear = Number(activeTurn?.id.slice(0, 4) ?? 2015);
+  const cityEra = sceneYear < 2020 ? "start" : sceneYear < 2024 ? "recovery" : sceneYear < 2028 ? "transform" : "future";
 
   useEffect(() => {
     saveGame(state);
@@ -68,7 +73,7 @@ function App() {
 
   const commitAction = (action: Action) => {
     if (!currentTurn) return;
-    setState((previous) => applyAction(previous, action, currentTurn.label, turns.length));
+    setState((previous) => applyAction(previous, action, currentTurn.label, turns.length, currentTurn.id));
     setPendingAction(null);
     setNotice(`「${action.title}」を選びました`);
     scrollToDecision();
@@ -210,7 +215,8 @@ function App() {
 
       <div className="game-layout">
         <section className="scene-card">
-          <div className={`city-scene mood-${average >= 55 && lowest >= 48 ? "bright" : lowest < 48 ? "cloudy" : "calm"} ${[...sceneKinds].map((kind) => `has-${kind}`).join(" ")}`}>
+          <div className={`city-scene era-${cityEra} mood-${average >= 55 && lowest >= 48 ? "bright" : lowest < 48 ? "cloudy" : "calm"} ${[...sceneKinds].map((kind) => `has-${kind}`).join(" ")} ${state.goals[13] >= 60 ? "city-green" : ""} ${state.goals[11] >= 60 ? "city-connected" : ""}`}>
+            <span className="city-year">{sceneYear}</span>
             <div className="sky-orb" />
             <div className="city-line" aria-hidden="true">
               <span /><span /><span /><span /><span />
@@ -220,6 +226,9 @@ function App() {
               <span className="scene-bus">🚌</span>
               <span className="scene-tree" />
               <span className="scene-lights">✨</span>
+              <span className="scene-wind">◌</span>
+              <span className="scene-train">🚃</span>
+              <span className="scene-people">🧑‍🤝‍🧑</span>
             </div>
             <div className="scene-copy">
               <p>窓の向こうのまち</p>
@@ -232,7 +241,21 @@ function App() {
             <div className="memory-list">{memories.map((memory) => <article key={memory.label}><span aria-hidden="true">{memory.icon}</span><div><strong>{memory.label}</strong><small>{memory.detail}</small></div></article>)}</div>
           </section>}
 
-          {lastAction ? (
+          {state.gameOver ? (
+            <div className={`decision-panel game-over game-over-${state.gameOver.reason}`} aria-live="assertive">
+              <span className="game-over-mark" aria-hidden="true">{state.gameOver.reason === "election" ? "🗳️" : state.gameOver.reason === "disaster" ? "🌧️" : "📉"}</span>
+              <p className="result-kicker">GAME OVER · {activeTurn?.label}</p>
+              <h2>{state.gameOver.title}</h2>
+              <p>{state.gameOver.text}</p>
+              <div className="game-over-advice"><strong>次の挑戦へのヒント</strong><p>{state.gameOver.advice}</p></div>
+              <div className="ending-summary">
+                <div><span>SDGsポイント</span><strong>今回の記録</strong><b>{sdgsPoints}</b></div>
+                <div><span>社会的信頼</span><strong>市民からの評価</strong><b>{state.resources.trust}</b></div>
+                <div><span>到達した年</span><strong>{activeTurn?.chapter}</strong><b>{sceneYear}</b></div>
+              </div>
+              <button className="primary-button wide" onClick={restart}>新しい市政に挑戦する</button>
+            </div>
+          ) : lastAction ? (
             <div className="decision-panel result-panel" aria-live="polite">
               <p className="result-kicker">YOUR DECISION</p>
               <h2>選択が、まちを動かしました。</h2>
@@ -248,6 +271,11 @@ function App() {
                   {skillImpact(lastAction.effects).length === 0 && <span>今回、5つの力に直接の変化はありません。</span>}
                 </div>
               </section>
+              {annualReview && <section className="annual-review" aria-label={`${annualReview.year}年の振り返り`}>
+                <div className="annual-year"><span>YEAR REVIEW</span><strong>{annualReview.year}</strong><small>年末レポート</small></div>
+                <div className="annual-summary"><h3>市民の評価：{annualReview.approval}</h3><p>今年のSDGsポイントは <strong>{annualReview.points}</strong>。最も育ったのは{annualReview.strongest.icon}<strong>{annualReview.strongest.label}</strong>、次に向き合うのは{annualReview.attention.icon}<strong>{annualReview.attention.label}</strong>です。</p>{annualReview.nextElection && <b>🗳️ {annualReview.nextElection}</b>}</div>
+                <ol>{annualReview.choices.map((choice, index) => <li key={`${choice}-${index}`}>{choice}</li>)}</ol>
+              </section>}
               {lastAction.income && <div className="income-note"><span>この四半期の市税収</span><strong>+{lastAction.income}</strong><small>経済が育つと、次の政策に使える収入も変わります。</small></div>}
               <article className="newspaper">
                 <p>まちの未来新聞 · 第{state.turnIndex}号 · 架空のニュース</p>
@@ -319,6 +347,7 @@ function App() {
                 <div className="event-counter"><span>TURN</span><strong>{state.turnIndex + 1}</strong><small>/ {turns.length}</small></div>
               </section>
               {signal && <div className={`turn-signal signal-${signal.level}`}><span>まちの気配 · {signal.label}</span><p>{signal.text}</p></div>}
+              {warnings.length > 0 && <section className="risk-alerts" aria-label="市政の危険信号">{warnings.map((warning) => <article key={warning.title}><span aria-hidden="true">{warning.icon}</span><div><strong>{warning.title}</strong><p>{warning.text}</p></div></article>)}</section>}
               <div className="scenario-note">
                 <strong>{currentTurn.scenarioKind === "historical-frame" ? "史実を背景にした仮想シナリオ" : "ゲーム用の仮想シナリオ"}</strong>
                 <span>政策効果の数値は、現実の予測ではなくゲーム上の仮定です。</span>

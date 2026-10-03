@@ -48,6 +48,13 @@ export type HistoryEntry = {
   actionTitle: string;
 };
 
+export type GameOver = {
+  reason: "election" | "disaster" | "fiscal";
+  title: string;
+  text: string;
+  advice: string;
+};
+
 export type GameState = {
   report?: { title: string; stories: string[]; effects: Effects; income?: number };
   pending?: { due: number; title: string; effects: Effects }[];
@@ -58,4 +65,5 @@ export type GameState = {
   resources: Resources;
   history: HistoryEntry[];
   completed: boolean;
+  gameOver?: GameOver;
 };

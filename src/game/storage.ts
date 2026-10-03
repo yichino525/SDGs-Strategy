@@ -27,6 +27,9 @@ const hasValidCoreState = (value: unknown): value is GameState => {
   if (!Array.from({ length: 17 }, (_, index) => index + 1).every((id) => isScore(savedGoals[id]))) return false;
   if (value.report !== undefined && (!isRecord(value.report) || typeof value.report.title !== "string" || !Array.isArray(value.report.stories) || !value.report.stories.every((story) => typeof story === "string") || !isEffects(value.report.effects))) return false;
   if (value.pending !== undefined && (!Array.isArray(value.pending) || !value.pending.every((item) => isRecord(item) && typeof item.due === "number" && typeof item.title === "string" && isEffects(item.effects)))) return false;
+  if (value.gameOver !== undefined && (!isRecord(value.gameOver)
+    || !["election", "disaster", "fiscal"].includes(value.gameOver.reason as string)
+    || ![value.gameOver.title, value.gameOver.text, value.gameOver.advice].every((item) => typeof item === "string"))) return false;
   return true;
 };
 
