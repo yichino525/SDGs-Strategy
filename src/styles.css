@@ -44,6 +44,12 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .player-copy strong, .player-copy small { display: block; }
 .player-copy strong { margin: 3px 0; font-size: 1.05rem; }
 .player-copy small { color: #d7e5ff; font-size: .72rem; }
+.rank-chip { display: inline-block; margin-right: 7px; padding: 3px 7px; border-radius: 7px; background: #d9e2ff; color: #263a82; font-size: .62rem; font-weight: 900; }
+.rank-s { background: linear-gradient(135deg, #fff5a5, #ff9f63) !important; color: #5a3113 !important; }
+.rank-a { background: #8ff0c1 !important; color: #164a37 !important; }
+.rank-b { background: #99d9ff !important; color: #153f69 !important; }
+.rank-c { background: #d2c5ff !important; color: #3b2d6f !important; }
+.rank-d { background: #c5ccd8 !important; color: #3f4652 !important; }
 .player-score { min-width: 95px; text-align: right; }
 .player-score strong { margin: 2px 2px 0 0; color: #fff; font-size: 2rem; line-height: 1; }
 .player-score small { color: #d7e5ff; font-size: .7rem; }
@@ -206,9 +212,17 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .annual-year span { font-size: .61rem; font-weight: 900; letter-spacing: .1em; }
 .annual-year strong { font-size: 2rem; line-height: 1.1; }
 .annual-year small { font-size: .68rem; }
+.annual-rank { display: grid; width: 48px; height: 48px; margin-top: 8px; place-items: center; border-radius: 50%; font-size: 1.7rem; font-weight: 1000; box-shadow: 0 4px 0 rgba(48,34,10,.18); }
 .annual-summary h3 { margin: 0 0 5px; color: #fff4bf; font-size: 1rem; }
 .annual-summary p { margin: 0; color: #eee8dc; font-size: .82rem; line-height: 1.65; }
 .annual-summary > b { display: inline-block; margin-top: 7px; color: #ffdb79; font-size: .78rem; }
+.earned-title { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 9px; }
+.earned-title span { padding: 3px 7px; border-radius: 6px; background: #d6a83f; color: #30220d; font-size: .62rem; font-weight: 900; }
+.earned-title strong { color: #fff0ae; font-size: .85rem; }
+.annual-traits { grid-column: 1 / -1; display: grid; gap: 5px; padding: 12px 14px; border-radius: 11px; background: rgba(10,22,57,.38); }
+.annual-traits > strong { color: #ffe18a; font-size: .78rem; }
+.annual-traits > span { color: #e8eee9; font-size: .75rem; }
+.annual-traits > b { margin-top: 4px; color: #9fe9ce; font-size: .78rem; }
 .annual-review ol { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px 18px; margin: 0; padding: 12px 12px 0 30px; border-top: 1px solid rgba(255,255,255,.2); color: #e8e3d9; font-size: .73rem; }
 .game-over { min-height: 520px; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(circle at 50% 0%, rgba(255,122,122,.25), transparent 48%); text-align: center; }
 .game-over-mark { display: grid; width: 94px; height: 94px; margin: 0 auto 16px; place-items: center; border: 4px solid #ffd18a; border-radius: 50%; background: #61353d; font-size: 3.2rem; box-shadow: 0 9px 0 rgba(20,8,24,.25); }
@@ -344,6 +358,7 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .annual-review { grid-template-columns: 1fr; }
   .annual-year { min-width: 0; }
   .annual-review ol { grid-column: auto; grid-template-columns: 1fr; }
+  .annual-traits { grid-column: auto; }
   .promise-strip { grid-template-columns: 1fr; }
   .promise-strip > div:first-child { grid-row: auto; }
   .resource-card { padding: 11px; gap: 8px; }

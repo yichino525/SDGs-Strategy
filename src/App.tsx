@@ -10,7 +10,7 @@ import { alignProgress, applyAction, averageGoalScore, createInitialState } from
 import { clearSave, loadGame, saveGame } from "./game/storage";
 import { buildWitnessReaction, pledgeProgress } from "./game/storyEngine";
 import { playerLevel, playerSkills, playerTitle, skillImpact, totalSdgsPoints } from "./game/playerProfile";
-import { buildAnnualReview, riskWarnings } from "./game/progression";
+import { buildAnnualReview, cityRank, riskWarnings } from "./game/progression";
 import type { Action, Effects, GameState, PledgeId } from "./game/types";
 
 const ResourceCard = ({ label, value, icon }: { label: string; value: number; icon: string }) => (
@@ -60,6 +60,7 @@ function App() {
   const sceneKinds = useMemo(() => new Set(memories.map((memory) => memory.kind)), [memories]);
   const annualReview = useMemo(() => lastAction ? buildAnnualReview(state, activeTurn?.id) : undefined, [activeTurn?.id, lastAction, state]);
   const warnings = useMemo(() => riskWarnings(state, currentTurn), [currentTurn, state]);
+  const rank = useMemo(() => cityRank(state), [state]);
   const sceneYear = Number(activeTurn?.id.slice(0, 4) ?? 2015);
   const cityEra = sceneYear < 2020 ? "start" : sceneYear < 2024 ? "recovery" : sceneYear < 2028 ? "transform" : "future";
 
@@ -191,7 +192,7 @@ function App() {
 
       <section className="player-card" aria-label="あなたのSDGs育成カード">
         <div className="player-badge" aria-hidden="true"><span>LV.</span><strong>{level}</strong></div>
-        <div className="player-copy"><p>SDGs PLAYER</p><strong>{title}</strong><small>選択で5つの力を育てよう</small></div>
+        <div className="player-copy"><p>SDGs PLAYER</p><strong>{title}</strong><small><b className={`rank-chip rank-${rank.grade.toLowerCase()}`}>RANK {rank.grade}</b>{rank.label}</small></div>
         <div className="player-score"><span>SDGs POINT</span><strong>{sdgsPoints}</strong><small>/ 500</small></div>
         <div className="skill-bars">
           {skills.map((skill) => <div className="skill-bar" key={skill.id}>
@@ -272,8 +273,9 @@ function App() {
                 </div>
               </section>
               {annualReview && <section className="annual-review" aria-label={`${annualReview.year}年の振り返り`}>
-                <div className="annual-year"><span>YEAR REVIEW</span><strong>{annualReview.year}</strong><small>年末レポート</small></div>
-                <div className="annual-summary"><h3>市民の評価：{annualReview.approval}</h3><p>今年のSDGsポイントは <strong>{annualReview.points}</strong>。最も育ったのは{annualReview.strongest.icon}<strong>{annualReview.strongest.label}</strong>、次に向き合うのは{annualReview.attention.icon}<strong>{annualReview.attention.label}</strong>です。</p>{annualReview.nextElection && <b>🗳️ {annualReview.nextElection}</b>}</div>
+                <div className="annual-year"><span>YEAR REVIEW</span><strong>{annualReview.year}</strong><small>年末レポート</small><b className={`annual-rank rank-${annualReview.rank.grade.toLowerCase()}`}>{annualReview.rank.grade}</b></div>
+                <div className="annual-summary"><h3>市民の評価：{annualReview.approval}</h3><p>今年のSDGsポイントは <strong>{annualReview.points}</strong>。最も育ったのは{annualReview.strongest.icon}<strong>{annualReview.strongest.label}</strong>、次に向き合うのは{annualReview.attention.icon}<strong>{annualReview.attention.label}</strong>です。</p><div className="earned-title"><span>獲得称号</span><strong>🏅 {annualReview.title}</strong></div>{annualReview.nextElection && <b>🗳️ {annualReview.nextElection}</b>}</div>
+                <div className="annual-traits"><strong>今年の市政の特徴</strong>{annualReview.traits.map((trait) => <span key={trait}>✓ {trait}</span>)}<b>次年度ミッション：{annualReview.nextGoal}</b></div>
                 <ol>{annualReview.choices.map((choice, index) => <li key={`${choice}-${index}`}>{choice}</li>)}</ol>
               </section>}
               {lastAction.income && <div className="income-note"><span>この四半期の市税収</span><strong>+{lastAction.income}</strong><small>経済が育つと、次の政策に使える収入も変わります。</small></div>}

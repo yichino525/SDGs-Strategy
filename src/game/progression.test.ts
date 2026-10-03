@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { applyAction, createInitialState } from "./scoreEngine";
-import { buildAnnualReview, evaluateGameOver, riskWarnings } from "./progression";
+import { buildAnnualReview, cityRank, evaluateGameOver, riskWarnings } from "./progression";
 import { turns } from "../data/turns";
 
 describe("年次進行とゲームオーバー", () => {
@@ -10,7 +10,21 @@ describe("年次進行とゲームオーバー", () => {
     const review = buildAnnualReview(state, "2016-q4");
     expect(review?.year).toBe(2016);
     expect(review?.choices).toHaveLength(4);
+    expect(review?.rank.grade).toMatch(/[A-D]|S/);
+    expect(review?.title).toBeTruthy();
+    expect(review?.traits.length).toBeGreaterThan(0);
+    expect(review?.nextGoal).toContain("まで伸ばす");
     expect(buildAnnualReview(state, "2016-q3")).toBeUndefined();
+  });
+
+  it("市政の状態から年次ランクを計算する", () => {
+    const state = createInitialState();
+    expect(cityRank(state).grade).toBe("C");
+    state.resources.trust = 90;
+    state.resources.economy = 80;
+    state.resources.budget = 30;
+    for (const id of Object.keys(state.goals)) state.goals[Number(id)] = 80;
+    expect(cityRank(state).grade).toBe("S");
   });
 
   it("信頼を失ったまま選挙年を終えると落選する", () => {
