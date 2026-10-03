@@ -18,7 +18,7 @@ describe("大型プロジェクト", () => {
   it("準備した政策によって成功率が上がる", () => {
     const project = specialProjects[0];
     const state = readyState();
-    const prepared = { ...state, history: [{ turnId: "0", turnLabel: "test", actionId: "community-bus", actionTitle: "バス" }] };
+    const prepared = { ...state, history: [{ turnId: "0", turnLabel: "test", actionId: "visible-projects", actionTitle: "都市事業" }] };
     expect(projectChance(prepared, project)).toBe(projectChance(state, project) + 12);
   });
 

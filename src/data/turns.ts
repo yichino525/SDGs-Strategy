@@ -1,4 +1,5 @@
 import type { Turn } from "../game/types";
+import { annualChoices } from "./annualChoices";
 
 const earlyTurns: Turn[] = [
   {
@@ -827,4 +828,18 @@ const futureTurns: Turn[] = futureSeeds.map((seed) => ({
   actions: futureActions(seed),
 }));
 
-export const turns: Turn[] = [...earlyTurns, ...futureTurns];
+export const legacyQuarterlyTurns: Turn[] = [...earlyTurns, ...futureTurns];
+
+// 1年を1ステージに圧縮し、2015〜2030年を16回の大きな決断で遊ぶ。
+// 2019年までは手作りデータの章末イベント、2020年以降は年ごとの固有3択を使う。
+const annualTurnIds = Array.from({ length: 16 }, (_, index) => `${2015 + index}-q4`);
+export const turns: Turn[] = annualTurnIds.map((id) => {
+  const original = legacyQuarterlyTurns.find((turn) => turn.id === id);
+  if (!original) throw new Error(`Annual turn data is missing: ${id}`);
+  const year = Number(id.slice(0, 4));
+  return {
+    ...original,
+    label: `${year}年`,
+    actions: annualChoices[year] ?? original.actions,
+  };
+});

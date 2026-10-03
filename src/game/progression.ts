@@ -2,8 +2,8 @@ import { playerSkills, totalSdgsPoints } from "./playerProfile";
 import type { GameOver, GameState, Turn } from "./types";
 
 const electionYears = new Set([2019, 2023, 2027]);
-const disasterTurns = new Set(["2017-q1", "2023-q4", "2028-q1"]);
-const highRiskActions = new Set(["reserve-fund", "mass-tourism", "visible-projects", "predictive-support", "decade-reserve"]);
+const disasterTurns = new Set(["2017-q4", "2023-q4", "2028-q4"]);
+const highRiskActions = new Set(["reserve-fund", "mass-tourism", "visible-projects", "predictive-support", "decade-reserve", "robot-counter", "compact-city-bet", "water-token", "underground-lifeline", "green-industry-deal"]);
 
 const yearOf = (turnId: string) => Number(turnId.slice(0, 4));
 const resilience = (state: GameState) =>
@@ -51,7 +51,7 @@ const annualTraits = (state: GameState) => {
 };
 
 export const evaluateGameOver = (state: GameState, turnId?: string): GameOver | undefined => {
-  if (!turnId || state.turnIndex < 4) return undefined;
+  if (!turnId || state.turnIndex < 2) return undefined;
   const year = yearOf(turnId);
   const highRiskChoices = state.history.filter((entry) => highRiskActions.has(entry.actionId)).length;
 
@@ -121,7 +121,7 @@ export const buildAnnualReview = (state: GameState, turnId?: string) => {
     nextGoal: `${attention.label}を${Math.min(100, attention.score + 5)}まで伸ばす`,
     strongest,
     attention,
-    choices: state.history.slice(-4).map((entry) => entry.actionTitle),
+    choices: state.history.filter((entry) => entry.turnLabel.startsWith(`${year}年`)).map((entry) => entry.actionTitle).slice(-1),
     nextElection: electionYears.has(year) ? "今年は市長選の年です" : undefined,
   };
 };

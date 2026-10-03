@@ -58,7 +58,9 @@ function App() {
   const witness = lastAction ? buildWitnessReaction(lastAction.effects, Math.max(0, state.turnIndex - 1)) : undefined;
   const chapterBreak = lastAction ? chapterBreaks[state.turnIndex] : undefined;
   const implementationPlan = pendingAction ? implementationPlans[pendingAction.id] : undefined;
-  const memories = useMemo(() => state.history.flatMap((entry) => cityMemories[entry.actionId] ? [cityMemories[entry.actionId]] : []), [state.history]);
+  const memories = useMemo(() => state.history.flatMap((entry) => cityMemories[entry.actionId]
+    ? [cityMemories[entry.actionId]]
+    : [{ label: entry.actionTitle, detail: "この年の決断が、まちの新しい景色として残っている", icon: "✦", kind: "future" }]), [state.history]);
   const sceneKinds = useMemo(() => new Set(memories.map((memory) => memory.kind)), [memories]);
   const annualReview = useMemo(() => lastAction ? buildAnnualReview(state, activeTurn?.id) : undefined, [activeTurn?.id, lastAction, state]);
   const warnings = useMemo(() => riskWarnings(state, currentTurn), [currentTurn, state]);
@@ -320,7 +322,7 @@ function App() {
                 <div className="annual-traits"><strong>今年の市政の特徴</strong>{annualReview.traits.map((trait) => <span key={trait}>✓ {trait}</span>)}<b>次年度ミッション：{annualReview.nextGoal}</b></div>
                 <ol>{annualReview.choices.map((choice, index) => <li key={`${choice}-${index}`}>{choice}</li>)}</ol>
               </section>}
-              {lastAction.income && <div className="income-note"><span>この四半期の市税収</span><strong>+{lastAction.income}</strong><small>経済が育つと、次の政策に使える収入も変わります。</small></div>}
+              {lastAction.income && <div className="income-note"><span>この年の市税収</span><strong>+{lastAction.income}</strong><small>経済が育つと、次の政策に使える収入も変わります。</small></div>}
               <article className="newspaper">
                 <p>まちの未来新聞 · 第{state.turnIndex}号 · 架空のニュース</p>
                 <h3>{lastAction.stories.length ? "現場から、変化の声が届いた。" : "新しい方針、地域で動き出す"}</h3>
@@ -349,7 +351,7 @@ function App() {
               </div>
               <p className="result-note">良くなった数字だけでなく、負担や後回しになった課題も次の判断につながります。</p>
               <button className="primary-button wide" onClick={continueGame}>
-                {state.completed ? `${activeChapterNumber}の結果を見る` : "次の四半期へ進む"} →
+                {state.completed ? `${activeChapterNumber}の結果を見る` : "次の年へ進む"} →
               </button>
             </div>
           ) : specialProject ? (
@@ -438,7 +440,7 @@ function App() {
                     <span className="skill-preview">{skillImpact(action.effects).map((skill) => <i key={skill.id} className={skill.value > 0 ? "up" : "down"}>{skill.icon} {skill.label} {formatDelta(skill.value)}</i>)}</span>
                     <span className="action-preview"><span>届く人：{action.audience}</span><span>実感：{action.timing}</span><span>主な変化：{goalPreview(action.effects)}</span></span>
                     <span className="policy-hint">必要予算 {costLabel} ／ 現在 {state.resources.budget}</span>
-                    {delayed[action.id] && <span className="policy-hint">◷ 2四半期後にも効果：{delayed[action.id].title}</span>}
+                    {delayed[action.id] && <span className="policy-hint">◷ 次の年にも効果：{delayed[action.id].title}</span>}
                     {chains.filter(chain => chain.action === action.id).map(chain => <span className="policy-hint" key={chain.requires}>{state.history.some(entry => entry.actionId === chain.requires) ? '✦ 連鎖が発動！' : '連鎖のヒント：'} {chain.title}</span>)}
                     <b>この方針を選ぶ →</b>
                   </button>;
@@ -472,7 +474,7 @@ function App() {
               return <span className={record?.outcome ?? "locked"} key={project.id} title={record ? `${record.title}：${record.outcome}` : `${project.minTurn + 1}ターン目以降に条件を満たすと出現`}><b>{record?.outcome === "success" ? "★" : record?.outcome === "failure" ? "!" : record?.outcome === "declined" ? "−" : "?"}</b>{project.icon}</span>;
             })}</div><small>条件を満たすと、通常ターンの前に提案されます。</small>
           </section>
-          {(state.pending ?? []).length > 0 && <section className="future-panel"><p className="eyebrow">育っている投資</p>{state.pending?.map(item => <p key={item.title}><strong>あと{item.due - state.turnIndex}四半期</strong><br />{item.title}</p>)}</section>}
+          {(state.pending ?? []).length > 0 && <section className="future-panel"><p className="eyebrow">育っている投資</p>{state.pending?.map(item => <p key={item.title}><strong>次の年に実る予定</strong><br />{item.title}</p>)}</section>}
           <div className="section-heading">
             <div>
               <p className="eyebrow">17 GOALS</p>
@@ -505,7 +507,7 @@ function App() {
           <details className="glossary">
             <summary>ことばの説明</summary>
             <dl>
-              <div><dt>四半期</dt><dd>1年を3か月ずつ、4つに分けた期間。</dd></div>
+              <div><dt>ターン</dt><dd>このゲームでは1ターンで1年が進みます。</dd></div>
               <div><dt>社会的信頼</dt><dd>住民が市役所や地域を信頼し、協力できる度合い。</dd></div>
               <div><dt>政策連鎖</dt><dd>前に選んだ政策と新しい政策がつながり、追加の変化が生まれること。</dd></div>
             </dl>

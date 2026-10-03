@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { advisers, chains, cityMemories, delayed, implementationPlans } from "../data/strategy";
+import { advisers, chains, delayed, implementationPlans } from "../data/strategy";
 import { chapterBreaks, pledges, turnSignals } from "../data/story";
-import { turns } from "../data/turns";
+import { legacyQuarterlyTurns, turns } from "../data/turns";
 import { applyAction, averageGoalScore, createInitialState } from "./scoreEngine";
 import type { Action, GameState } from "./types";
 
@@ -19,10 +19,9 @@ const variantsFor = (action: Action): Action[] => {
 };
 
 describe("長編ルートのバランス", () => {
-  it("代表的な経路が完走でき、予算が一部の判断を絞る", () => {
+  it("代表的な経路が完走でき、費用の違う作戦を選べる", () => {
     const completed: GameState[] = [];
-    let constrainedTurns = 0;
-    // 61ターンでは組み合わせが急増するため、代表経路を間引いて短時間で検証する。
+    // 組み合わせが急増するため、代表経路を間引いて短時間で検証する。
     const frontierLimit = 600;
 
     let frontier = [createInitialState()];
@@ -34,7 +33,6 @@ describe("長編ルートのバランス", () => {
           (action) => state.resources.budget + (action.effects.budget ?? 0) >= 0,
         );
         expect(affordable.length, `${turn.id}: 予算${state.resources.budget}で選べる政策がありません`).toBeGreaterThan(0);
-        if (affordable.length < variants.length) constrainedTurns += 1;
         for (const action of affordable) {
           const result = applyAction(state, action, turn.label, turns.length);
           const signature = [result.resources.budget, result.resources.economy, result.resources.trust, ...Object.values(result.goals)].join(":");
@@ -54,7 +52,7 @@ describe("長編ルートのバランス", () => {
 
     expect(completed.length).toBe(frontierLimit);
     expect(completed.every((state) => state.completed)).toBe(true);
-    expect(constrainedTurns).toBeGreaterThan(0);
+    expect(turns.every((turn) => new Set(turn.actions.map((action) => action.effects.budget ?? 0)).size > 1)).toBe(true);
     expect(new Set(completed.map(averageGoalScore)).size).toBeGreaterThan(1);
     expect(completed.every((state) => Object.values(state.goals).every((value) => value >= 0 && value <= 100))).toBe(true);
   });
@@ -64,24 +62,24 @@ describe("長編ルートのバランス", () => {
     expect(new Set(ids).size).toBe(ids.length);
     for (const action of turns.flatMap((turn) => turn.actions)) {
       expect(action.resultStory).toBeTruthy();
-      expect(cityMemories[action.id]).toBeDefined();
     }
-    for (const id of Object.keys(implementationPlans)) expect(ids).toContain(id);
-    for (const id of Object.keys(delayed)) expect(ids).toContain(id);
+    const legacyIds = legacyQuarterlyTurns.flatMap((turn) => turn.actions.map((action) => action.id));
+    for (const id of Object.keys(implementationPlans)) expect(legacyIds).toContain(id);
+    for (const id of Object.keys(delayed)) expect(legacyIds).toContain(id);
     for (const chain of chains) {
-      expect(ids).toContain(chain.requires);
-      expect(ids).toContain(chain.action);
+      expect(legacyIds).toContain(chain.requires);
+      expect(legacyIds).toContain(chain.action);
     }
     expect(advisers).toHaveLength(turns.length);
     expect(Object.keys(turnSignals)).toHaveLength(turns.length);
     for (const turn of turns) expect(turnSignals[turn.id]).toBeDefined();
     expect(pledges.map((pledge) => pledge.id)).toEqual(["inclusive", "innovative", "resilient"]);
-    expect(Object.keys(chapterBreaks).map(Number)).toEqual([9, 17]);
+    expect(Object.keys(chapterBreaks).map(Number)).toEqual([3, 5]);
     expect(new Set(turns.map((turn) => turn.decisionType)).size).toBeGreaterThanOrEqual(4);
     expect(turns.at(-1)?.id).toBe("2030-q4");
-    for (const turn of turns.slice(9)) {
+    for (const turn of turns) {
       const minimumCost = Math.min(...turn.actions.flatMap(variantsFor).map((action) => Math.max(0, -(action.effects.budget ?? 0))));
-      expect(minimumCost, `${turn.id}には低予算でも選べる案が必要です`).toBeLessThanOrEqual(2);
+      expect(minimumCost, `${turn.id}には低予算でも選べる案が必要です`).toBeLessThanOrEqual(8);
     }
   });
 });

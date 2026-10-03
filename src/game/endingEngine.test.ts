@@ -1,16 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { goals } from "../data/goals";
-import { turns } from "../data/turns";
-import { applyAction, createInitialState } from "./scoreEngine";
+import { createInitialState } from "./scoreEngine";
 import { buildEnding } from "./endingEngine";
 
 describe("エンディング", () => {
   it("選択の傾向と発動した政策連鎖をまとめる", () => {
-    let state = createInitialState();
-    state = applyAction(state, turns[0].actions[0], turns[0].label, 4);
-    state = applyAction(state, turns[1].actions[0], turns[1].label, 4);
-    state = applyAction(state, turns[2].actions[0], turns[2].label, 4);
-    state = applyAction(state, turns[3].actions[0], turns[3].label, 4);
+    const state = createInitialState();
+    state.history = [
+      { turnId: "0", turnLabel: "2015年", actionId: "child-support", actionTitle: "子ども支援" },
+      { turnId: "1", turnLabel: "2016年", actionId: "community-bus", actionTitle: "地域バス" },
+      { turnId: "2", turnLabel: "2017年", actionId: "inclusive-evacuation", actionTitle: "避難計画" },
+      { turnId: "3", turnLabel: "2018年", actionId: "community-kitchen", actionTitle: "地域食堂" },
+    ];
 
     const ending = buildEnding(state, goals);
     expect(ending.profile.id).toBe("inclusive");

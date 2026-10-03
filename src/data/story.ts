@@ -56,7 +56,7 @@ export const recurringCast = [
     hope: "今回の投資は、次の選択肢を広げる土台になりそうです。",
     concern: "支持を失えば、良い政策でも続けられません。説明する時間を確保しましょう。",
     tradeoff: "効果と負担が別の場所に現れています。次の予算で調整が必要です。",
-    watch: "数字は動きましたが、本当の評価は数四半期後に現れます。",
+    watch: "数字は動きましたが、本当の評価は次の年に現れます。",
   },
   {
     name: "金城 ソフィア",
@@ -91,18 +91,18 @@ const baseTurnSignals: Record<string, { label: string; text: string; level: "qui
 export const turnSignals: Record<string, { label: string; text: string; level: "quiet" | "rising" | "urgent" }> = Object.fromEntries(
   turns.map((turn) => [turn.id, baseTurnSignals[turn.id] ?? {
     label: "2030年へ続く選択",
-    text: "この判断が、次の四半期のまちの景色と市民の声につながります。",
+    text: "この判断が、次の年のまちの景色と市民の声につながります。",
     level: "rising" as const,
   }]),
 );
 
 export const chapterBreaks: Record<number, { title: string; text: string; next: string }> = {
-  9: {
+  3: {
     title: "まちは成長した。けれど、同じ速さでは歩けない人がいる。",
     text: "新しい仕事と施設が増えるほど、支える人の不足や見えにくい格差も表面に出てきました。",
     next: "第2章「成長のひずみ」へ",
   },
-  17: {
+  5: {
     title: "備えは、間に合ったのだろうか。",
     text: "2019年の冬。みらい市の日常は続いています。しかし、病院や学校の連絡網には小さな緊張が走っています。",
     next: "次章「危機の時代」へ続く",

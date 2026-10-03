@@ -17,13 +17,23 @@ export const createInitialState = (): GameState => ({
 });
 
 export const quarterlyRevenue = (economy: number) =>
-  clamp(3 + Math.round((economy - 50) / 15), 2, 5);
+  clamp(8 + Math.round((economy - 50) / 10), 5, 12);
 
 // 体験期間が延びても、以前の最終地点から続きを遊べるようにする。
-export const alignProgress = (state: GameState, totalTurns: number): GameState => ({
-  ...state,
-  completed: Boolean(state.gameOver) || state.turnIndex >= totalTurns,
-});
+export const alignProgress = (state: GameState, totalTurns: number): GameState => {
+  const legacyQuarterlySave = state.history.some((entry) => entry.turnLabel.includes("四半期"));
+  if (legacyQuarterlySave) {
+    const latestYear = Math.max(2014, ...state.history.map((entry) => Number(entry.turnLabel.slice(0, 4)) || 2014));
+    const migratedIndex = clamp(latestYear - 2014, 0, totalTurns);
+    return {
+      ...state,
+      turnIndex: migratedIndex,
+      pending: undefined,
+      completed: Boolean(state.gameOver) || migratedIndex >= totalTurns,
+    };
+  }
+  return { ...state, completed: Boolean(state.gameOver) || state.turnIndex >= totalTurns };
+};
 
 export const applyAction = (
   state: GameState,
@@ -51,7 +61,7 @@ export const applyAction = (
     stories.push(`政策の連鎖「${chain.title}」：${chain.text}`);
   }
   const future = delayed[action.id];
-  if (future) pending.push({ ...future, due: nextTurnIndex + 2 });
+  if (future) pending.push({ ...future, due: nextTurnIndex + 1 });
 
   const economyAfterPolicy = clamp(state.resources.economy + (effects.economy ?? 0));
   const income = quarterlyRevenue(economyAfterPolicy);

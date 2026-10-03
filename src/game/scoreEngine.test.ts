@@ -13,15 +13,15 @@ describe("score engine", () => {
     const action = turns[0].actions[0];
     const next = applyAction(state, action, turns[0].label, turns.length);
 
-    expect(next.resources.budget).toBe(23);
-    expect(next.report?.income).toBe(3);
+    expect(next.resources.budget).toBe(28);
+    expect(next.report?.income).toBe(8);
     expect(next.resources.trust).toBe(55);
     expect(next.goals[1]).toBe(56);
     expect(next.turnIndex).toBe(1);
     expect(next.history).toHaveLength(1);
   });
 
-  it("2030年までの全61ターンを完走する", () => {
+  it("2030年までの全16ターンを完走する", () => {
     let state = createInitialState();
     turns.forEach((turn) => {
       const action = turn.actions.find(
@@ -31,7 +31,7 @@ describe("score engine", () => {
       state = applyAction(state, action!, turn.label, turns.length);
     });
     expect(state.completed).toBe(true);
-    expect(state.turnIndex).toBe(61);
+    expect(state.turnIndex).toBe(16);
   });
 
   it("starts with an average SDGs score of 50", () => {
@@ -47,21 +47,20 @@ describe("score engine", () => {
   });
 
   it("lets the economy change quarterly city revenue", () => {
-    expect(quarterlyRevenue(35)).toBe(2);
-    expect(quarterlyRevenue(50)).toBe(3);
-    expect(quarterlyRevenue(65)).toBe(4);
+    expect(quarterlyRevenue(35)).toBe(7);
+    expect(quarterlyRevenue(50)).toBe(8);
+    expect(quarterlyRevenue(65)).toBe(10);
   });
 
-  it("makes the budget narrow later choices on an expensive route", () => {
-    let state = createInitialState();
-    state = applyAction(state, turns[0].actions[1], turns[0].label, turns.length);
-    state = applyAction(state, turns[1].actions[1], turns[1].label, turns.length);
-    state = applyAction(state, turns[2].actions[1], turns[2].label, turns.length);
+  it("予算が少なくても毎年一つは選べる", () => {
+    for (const turn of turns) {
+      const minimumCost = Math.min(...turn.actions.map((action) => Math.max(0, -(action.effects.budget ?? 0))));
+      expect(minimumCost).toBeLessThanOrEqual(8);
+    }
+  });
 
-    const affordable = turns[3].actions.filter(
-      (action) => state.resources.budget + (action.effects.budget ?? 0) >= 0,
-    );
-    expect(affordable.length).toBeLessThan(turns[3].actions.length);
-    expect(affordable.length).toBeGreaterThan(0);
+  it("旧61ターン版のセーブを年単位の進行へ移す", () => {
+    const saved = { ...createInitialState(), turnIndex: 27, history: [{ turnId: "26", turnLabel: "2022年 第2四半期", actionId: "old", actionTitle: "以前の選択" }] };
+    expect(alignProgress(saved, turns.length).turnIndex).toBe(8);
   });
 });

@@ -6,10 +6,10 @@ import { turns } from "../data/turns";
 describe("年次進行とゲームオーバー", () => {
   it("第4四半期に一年の振り返りを作る", () => {
     const state = createInitialState();
-    state.history = Array.from({ length: 4 }, (_, index) => ({ turnId: `${index}`, turnLabel: "", actionId: `${index}`, actionTitle: `選択${index + 1}` }));
+    state.history = [{ turnId: "1", turnLabel: "2016年", actionId: "one", actionTitle: "一年の選択" }];
     const review = buildAnnualReview(state, "2016-q4");
     expect(review?.year).toBe(2016);
-    expect(review?.choices).toHaveLength(4);
+    expect(review?.choices).toHaveLength(1);
     expect(review?.rank.grade).toMatch(/[A-D]|S/);
     expect(review?.title).toBeTruthy();
     expect(review?.traits.length).toBeGreaterThan(0);
@@ -39,9 +39,9 @@ describe("年次進行とゲームオーバー", () => {
     const state = createInitialState();
     state.turnIndex = 5;
     for (const id of [3, 6, 11, 13]) state.goals[id] = 40;
-    expect(evaluateGameOver(state, "2017-q1")?.reason).toBe("disaster");
+    expect(evaluateGameOver(state, "2017-q4")?.reason).toBe("disaster");
     state.goals[11] = 100;
-    expect(evaluateGameOver(state, "2017-q1")).toBeUndefined();
+    expect(evaluateGameOver(state, "2017-q4")).toBeUndefined();
   });
 
   it("実際の選択肢だけで市長選の敗北ルートが存在する", () => {
