@@ -26,6 +26,31 @@ button { font: inherit; }
 button:focus-visible { outline: 3px solid #ffe28a; outline-offset: 3px; }
 main { width: min(1440px, 100%); margin: 0 auto; padding: 40px clamp(18px, 4vw, 64px) 72px; }
 
+.cut-in { position: fixed; inset: 0; z-index: 1000; display: grid; grid-template-columns: minmax(80px, .35fr) auto minmax(260px, 1.4fr); align-items: center; gap: clamp(18px, 4vw, 58px); width: 100%; height: 100%; padding: clamp(24px, 7vw, 110px); overflow: hidden; border: 0; background: rgba(10, 21, 55, .94); color: #fff; text-align: left; cursor: pointer; animation: cut-in-enter .28s cubic-bezier(.2,.85,.28,1), cut-in-leave .3s 1.58s ease-in forwards; }
+.cut-in::before, .cut-in::after { content: ""; position: absolute; z-index: -1; width: 120%; height: 34%; left: -10%; background: linear-gradient(90deg, #2f67e7, #7956d9 55%, #dc5e9c); transform: rotate(-7deg) scaleX(0); animation: cut-in-slash .45s .08s cubic-bezier(.14,.86,.25,1) forwards; }
+.cut-in::before { top: 22%; }
+.cut-in::after { top: 50%; height: 12%; background: #ffd359; animation-delay: .18s; }
+.cut-in-danger::before, .cut-in-failure::before, .cut-in-gameover::before { background: linear-gradient(90deg, #9f293a, #ed603e 58%, #ffb64d); }
+.cut-in-success::before { background: linear-gradient(90deg, #087d68, #29c785 55%, #f2d35c); }
+.cut-in-special::before { background: linear-gradient(90deg, #66328c, #bf477e 55%, #f5a142); }
+.cut-in-speedlines { position: absolute; inset: -30%; z-index: -1; opacity: .24; background: repeating-conic-gradient(from 90deg at 50% 50%, transparent 0deg 4deg, rgba(255,255,255,.38) 4.5deg 5deg); animation: cut-in-lines .9s ease-out both; }
+.cut-in-year { position: relative; align-self: start; color: rgba(255,255,255,.18); font-size: clamp(3.5rem, 12vw, 11rem); font-weight: 1000; letter-spacing: -.08em; writing-mode: vertical-rl; animation: cut-in-year .55s .08s both; }
+.cut-in-icon { display: grid; width: clamp(92px, 16vw, 190px); aspect-ratio: 1; place-items: center; border: clamp(5px, .8vw, 11px) solid #fff2a1; border-radius: 34%; background: #183871; font-size: clamp(3.5rem, 8vw, 7.8rem); box-shadow: 0 16px 0 rgba(5,10,39,.3), 0 0 70px rgba(255,230,124,.3); transform: rotate(-8deg); animation: cut-in-icon .55s .12s cubic-bezier(.15,1.3,.3,1) both; }
+.cut-in-danger .cut-in-icon, .cut-in-failure .cut-in-icon, .cut-in-gameover .cut-in-icon { background: #702d3c; }
+.cut-in-success .cut-in-icon { background: #176b57; }
+.cut-in-copy { position: relative; display: grid; gap: 8px; text-shadow: 0 4px 0 rgba(13,16,50,.24); animation: cut-in-copy .48s .2s both; }
+.cut-in-copy small { color: #fff0a1; font-size: clamp(.7rem, 1.2vw, 1rem); font-weight: 1000; letter-spacing: .2em; }
+.cut-in-copy strong { max-width: 900px; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(2.2rem, 6vw, 6.4rem); line-height: 1.03; }
+.cut-in-copy b { max-width: 760px; color: #d9fff4; font-size: clamp(.95rem, 2vw, 1.65rem); line-height: 1.45; }
+.cut-in-skip { position: absolute; right: 24px; bottom: 20px; padding: 7px 12px; border: 1px solid rgba(255,255,255,.45); border-radius: 999px; color: rgba(255,255,255,.72); font-size: .68rem; }
+@keyframes cut-in-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cut-in-leave { to { opacity: 0; visibility: hidden; } }
+@keyframes cut-in-slash { to { transform: rotate(-7deg) scaleX(1); } }
+@keyframes cut-in-lines { from { transform: scale(.6) rotate(-4deg); opacity: 0; } to { transform: scale(1.1); opacity: .24; } }
+@keyframes cut-in-icon { from { opacity: 0; transform: translateX(-35vw) rotate(-22deg) scale(.4); } to { opacity: 1; transform: translateX(0) rotate(-8deg) scale(1); } }
+@keyframes cut-in-copy { from { opacity: 0; transform: translateX(28vw) skewX(-9deg); } to { opacity: 1; transform: translateX(0) skewX(0); } }
+@keyframes cut-in-year { from { opacity: 0; transform: translateY(-20vh); } to { opacity: 1; transform: translateY(0); } }
+
 .hero { display: flex; justify-content: space-between; align-items: end; gap: 32px; margin-bottom: 30px; }
 .eyebrow { margin: 0 0 10px; color: #72d9c2; font-size: .76rem; font-weight: 800; letter-spacing: .16em; }
 h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(2.2rem, 5vw, 5.4rem); font-weight: 500; line-height: .98; letter-spacing: -.04em; }
@@ -393,6 +418,12 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 }
 
 @media (max-width: 560px) {
+  .cut-in { grid-template-columns: 1fr; align-content: center; justify-items: center; gap: 20px; padding: 28px 22px; text-align: center; }
+  .cut-in-year { position: absolute; top: 25px; left: 18px; writing-mode: initial; font-size: 4rem; }
+  .cut-in-icon { width: 104px; border-width: 6px; border-radius: 28px; font-size: 3.8rem; }
+  .cut-in-copy { justify-items: center; }
+  .cut-in-copy strong { font-size: clamp(2.1rem, 12vw, 3.4rem); }
+  .cut-in-copy b { font-size: .95rem; }
   main { padding-top: 24px; }
   .hero { flex-direction: column; align-items: stretch; gap: 14px; }
   .turn-badge { min-width: 92px; padding: 11px; }
@@ -446,4 +477,9 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .pledge-intro { padding: 28px 20px; border-radius: 20px; }
   .witness-reaction { grid-template-columns: 38px 1fr; padding: 14px; }
   .witness-mark { width: 38px; height: 38px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cut-in, .cut-in::before, .cut-in::after, .cut-in-speedlines, .cut-in-year, .cut-in-icon, .cut-in-copy { animation: none !important; }
+  .cut-in::before, .cut-in::after { transform: rotate(-7deg) scaleX(1); }
 }

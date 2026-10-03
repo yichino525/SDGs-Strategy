@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { goals } from "./data/goals";
 import { chapterBreaks, pledges, turnSignals } from "./data/story";
 import { turns } from "./data/turns";
@@ -31,6 +31,15 @@ const goalPreview = (effects: Effects) => Object.entries(effects.goals)
   .map(([id, value]) => `${goals.find((goal) => goal.id === Number(id))?.shortName}${(value ?? 0) >= 0 ? "↑" : "↓"}`)
   .join("・");
 
+type CutIn = {
+  key: string;
+  kind: "event" | "danger" | "result" | "success" | "failure" | "special" | "gameover";
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  icon: string;
+};
+
 function App() {
   const [state, setState] = useState<GameState>(() => {
     const saved = loadGame();
@@ -38,6 +47,8 @@ function App() {
   });
   const [showPrologue, setShowPrologue] = useState(state.history.length === 0);
   const [pendingAction, setPendingAction] = useState<Action | null>(null);
+  const [cutIn, setCutIn] = useState<CutIn | null>(null);
+  const lastCutInKey = useRef("");
   const lastAction = state.report;
   const lastActionIcon = actionIcon(state.history.at(-1)?.actionId ?? "");
   const [notice, setNotice] = useState("選択は自動的に保存されます");
@@ -72,6 +83,21 @@ function App() {
   useEffect(() => {
     saveGame(state);
   }, [state]);
+
+  useEffect(() => {
+    if (showPrologue || !state.pledge) return;
+    let next: CutIn | null = null;
+    if (state.gameOver) next = { key: `gameover-${state.turnIndex}`, kind: "gameover", eyebrow: "MAYOR'S STORY · END", title: "市政を続けられない…", subtitle: state.gameOver.title, icon: state.gameOver.reason === "election" ? "🗳️" : state.gameOver.reason === "disaster" ? "🌧️" : "📉" };
+    else if (state.specialProjectReport) next = { key: `special-result-${state.specialProjectReport.projectId}`, kind: state.specialProjectReport.outcome, eyebrow: "BIG PROJECT · JUDGEMENT", title: state.specialProjectReport.outcome === "success" ? "プロジェクト成功！" : "プロジェクト失敗…", subtitle: state.specialProjectReport.title, icon: state.specialProjectReport.outcome === "success" ? "🏆" : "💥" };
+    else if (lastAction) next = { key: `result-${state.turnIndex}-${lastAction.title}`, kind: "result", eyebrow: `${activeTurn?.label ?? "今年"} · RESULT`, title: "まちが動いた！", subtitle: lastAction.title, icon: lastActionIcon };
+    else if (specialProject) next = { key: `special-${specialProject.id}`, kind: "special", eyebrow: "BIG CHANCE APPEARS", title: "特別な提案が届いた！", subtitle: specialProject.title, icon: specialProject.icon };
+    else if (currentTurn) next = { key: `event-${currentTurn.id}`, kind: currentTurn.decisionType === "危機への備え" || warnings.length ? "danger" : "event", eyebrow: `${currentTurn.label} · NEW EVENT`, title: currentTurn.headline, subtitle: currentTurn.chapter, icon: currentTurn.decisionType === "危機への備え" ? "⚠️" : actionIcon(currentTurn.actions[0]?.id ?? "") };
+    if (!next || lastCutInKey.current === next.key) return;
+    lastCutInKey.current = next.key;
+    setCutIn(next);
+    const timer = window.setTimeout(() => setCutIn((current) => current?.key === next.key ? null : current), 1900);
+    return () => window.clearTimeout(timer);
+  }, [activeTurn?.label, currentTurn, lastAction, lastActionIcon, showPrologue, specialProject, state.gameOver, state.pledge, state.specialProjectReport, state.turnIndex, warnings.length]);
 
   const scrollToDecision = () => requestAnimationFrame(() =>
     document.querySelector(".scene-card")?.scrollIntoView({ behavior: "smooth", block: "start" }),
@@ -202,6 +228,13 @@ function App() {
 
   return (
     <main>
+      {cutIn && <button className={`cut-in cut-in-${cutIn.kind}`} onClick={() => setCutIn(null)} aria-label={`${cutIn.title}。${cutIn.subtitle}。タップして閉じる`}>
+        <span className="cut-in-speedlines" aria-hidden="true" />
+        <span className="cut-in-year">{sceneYear}</span>
+        <span className="cut-in-icon" aria-hidden="true">{cutIn.icon}</span>
+        <span className="cut-in-copy"><small>{cutIn.eyebrow}</small><strong>{cutIn.title}</strong><b>{cutIn.subtitle}</b></span>
+        <span className="cut-in-skip">タップでスキップ</span>
+      </button>}
       <header className="hero">
         <div>
           <p className="eyebrow">SDGs STRATEGY · JAPAN 2015–2030</p>
