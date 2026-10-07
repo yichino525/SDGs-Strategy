@@ -9,6 +9,7 @@ export type Achievement = {
   title: string;
   description: string;
   hint: string;
+  revealedHint?: string;
   hidden?: boolean;
   unlocked: (state: GameState) => boolean;
 };
@@ -31,13 +32,13 @@ const achievementDefinitions: AchievementDefinition[] = [
   { id: "green-architect", icon: "🌳", title: "緑の未来設計者", description: "自然とエネルギーの力を伸ばしました。", hint: "地球力を70以上にする", unlocked: (state) => playerSkills(state).find((skill) => skill.id === "planet")!.score >= 70 },
   { id: "big-dreamer", icon: "🏗️", title: "大計画を実現した市長", description: "大型プロジェクトを成功へ導きました。", hint: "大型プロジェクトを1つ成功させる", unlocked: (state) => specialSuccesses(state) >= 1 },
   { id: "policy-combo", icon: "🔗", title: "政策コンボの発見者", description: "別々の政策をつなぎ、新しい効果を生みました。", hint: "政策の連鎖を見つける", unlocked: (state) => chains.some((chain) => chosen(state, chain.requires) && chosen(state, chain.action)) },
-  { id: "game-master", icon: "🎮", title: "遊びでまちを救う者", description: "ゲームの力で学びと防災を変えました。", hint: "？？？", hidden: true, unlocked: (state) => chosen(state, "learning-quest") && chosen(state, "disaster-escape-game") },
-  { id: "midnight-mayor", icon: "🌙", title: "真夜中の市長", description: "眠らない学びと市役所を実現しました。", hint: "？？？", hidden: true, unlocked: (state) => chosen(state, "school-night-shift") && chosen(state, "robot-counter") },
-  { id: "rain-whisperer", icon: "🦆", title: "雨と話すまちづくり名人", description: "広場と湿地に雨を受け止めてもらいました。", hint: "？？？", hidden: true, unlocked: (state) => chosen(state, "river-room") && chosen(state, "wetland-defense") },
-  { id: "phoenix", icon: "🔥", title: "失敗から立つ不死鳥", description: "大計画の失敗を越えて、別の成功をつかみました。", hint: "？？？", hidden: true, unlocked: (state) => Boolean(state.specialProjects?.some((item) => item.outcome === "failure") && state.specialProjects?.some((item) => item.outcome === "success")) },
-  { id: "triple-crown", icon: "👑", title: "三大プロジェクトの覇者", description: "3つの大型プロジェクトを成功させました。", hint: "？？？", hidden: true, unlocked: (state) => specialSuccesses(state) >= 3 },
-  { id: "perfect-world", icon: "💎", title: "17色のレジェンド", description: "17ゴールすべてを80以上へ導きました。", hint: "？？？", hidden: true, unlocked: (state) => Math.min(...Object.values(state.goals)) >= 80 },
-  { id: "last-coin", icon: "🪽", title: "最後の一枚まで未来へ", description: "ほぼ全予算を使い切って2030年へ到達しました。", hint: "？？？", hidden: true, unlocked: (state) => state.completed && !state.gameOver && state.resources.budget <= 2 },
+  { id: "game-master", icon: "🎮", title: "遊びでまちを救う者", description: "ゲームの力で学びと防災を変えました。", hint: "？？？", revealedHint: "学びのクエストと防災脱出ゲームを両方選ぶ", hidden: true, unlocked: (state) => chosen(state, "learning-quest") && chosen(state, "disaster-escape-game") },
+  { id: "midnight-mayor", icon: "🌙", title: "真夜中の市長", description: "眠らない学びと市役所を実現しました。", hint: "？？？", revealedHint: "夜の学校とロボット市役所を両方選ぶ", hidden: true, unlocked: (state) => chosen(state, "school-night-shift") && chosen(state, "robot-counter") },
+  { id: "rain-whisperer", icon: "🦆", title: "雨と話すまちづくり名人", description: "広場と湿地に雨を受け止めてもらいました。", hint: "？？？", revealedHint: "雨を受け止める広場と湿地の防災を両方選ぶ", hidden: true, unlocked: (state) => chosen(state, "river-room") && chosen(state, "wetland-defense") },
+  { id: "phoenix", icon: "🔥", title: "失敗から立つ不死鳥", description: "大計画の失敗を越えて、別の成功をつかみました。", hint: "？？？", revealedHint: "大型プロジェクトの失敗後に別の計画を成功させる", hidden: true, unlocked: (state) => Boolean(state.specialProjects?.some((item) => item.outcome === "failure") && state.specialProjects?.some((item) => item.outcome === "success")) },
+  { id: "triple-crown", icon: "👑", title: "三大プロジェクトの覇者", description: "3つの大型プロジェクトを成功させました。", hint: "？？？", revealedHint: "大型プロジェクトを3つ成功させる", hidden: true, unlocked: (state) => specialSuccesses(state) >= 3 },
+  { id: "perfect-world", icon: "💎", title: "17色のレジェンド", description: "17ゴールすべてを80以上へ導きました。", hint: "？？？", revealedHint: "17のSDGsスコアをすべて80以上にする", hidden: true, unlocked: (state) => Math.min(...Object.values(state.goals)) >= 80 },
+  { id: "last-coin", icon: "🪽", title: "最後の一枚まで未来へ", description: "ほぼ全予算を使い切って2030年へ到達しました。", hint: "？？？", revealedHint: "予算を2以下まで使い、ゲームオーバーせず2030年へ到達する", hidden: true, unlocked: (state) => state.completed && !state.gameOver && state.resources.budget <= 2 },
 ];
 
 export const achievements: Achievement[] = achievementDefinitions.map((achievement) => ({
@@ -55,3 +56,10 @@ export const featuredAchievement = (state: GameState) =>
 
 export const newlyUnlockedAchievements = (state: GameState, previouslyEarned: ReadonlySet<string>) =>
   achievementCollection(state).filter((achievement) => achievement.earned && !previouslyEarned.has(achievement.id));
+
+export const achievementRarity = (achievement: Achievement) => {
+  if (["triple-crown", "perfect-world", "last-coin"].includes(achievement.id)) return { label: "LEGEND", stars: 5 };
+  if (achievement.hidden) return { label: "SECRET", stars: 4 };
+  if (["five-star", "leave-no-one", "big-dreamer", "policy-combo"].includes(achievement.id)) return { label: "RARE", stars: 3 };
+  return { label: "STANDARD", stars: 2 };
+};

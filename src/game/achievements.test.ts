@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { achievementCollection, achievements, featuredAchievement, newlyUnlockedAchievements } from "./achievements";
+import { achievementCollection, achievementRarity, achievements, featuredAchievement, newlyUnlockedAchievements } from "./achievements";
 import { createInitialState } from "./scoreEngine";
 
 describe("称号コレクション", () => {
@@ -21,6 +21,15 @@ describe("称号コレクション", () => {
     state.history.push({ turnId: "0", turnLabel: "2015年", actionId: "child-support", actionTitle: "子ども支援" });
     expect(newlyUnlockedAchievements(state, new Set())).toHaveLength(1);
     expect(newlyUnlockedAchievements(state, new Set(["first-step"]))).toHaveLength(0);
+  });
+
+  it("隠し称号は獲得後に条件とレア度を確認できる", () => {
+    const phoenix = achievements.find((achievement) => achievement.id === "phoenix")!;
+    const legend = achievements.find((achievement) => achievement.id === "perfect-world")!;
+    expect(phoenix.hint).toBe("？？？");
+    expect(phoenix.revealedHint).toContain("失敗後");
+    expect(achievementRarity(phoenix)).toEqual({ label: "SECRET", stars: 4 });
+    expect(achievementRarity(legend)).toEqual({ label: "LEGEND", stars: 5 });
   });
 
   it("隠し称号は特別な組み合わせで解除される", () => {

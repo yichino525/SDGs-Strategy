@@ -13,7 +13,7 @@ import { buildWitnessReaction, pledgeProgress } from "./game/storyEngine";
 import { playerLevel, playerSkills, playerTitle, skillImpact, totalSdgsPoints } from "./game/playerProfile";
 import { buildAnnualReview, cityRank, riskWarnings } from "./game/progression";
 import { attemptSpecialProject, declineSpecialProject, nextSpecialProject, projectChance } from "./game/specialProjectEngine";
-import { achievementCollection, newlyUnlockedAchievements } from "./game/achievements";
+import { achievementCollection, achievementRarity, newlyUnlockedAchievements } from "./game/achievements";
 import type { Achievement } from "./game/achievements";
 import type { Action, Effects, GameState, PledgeId } from "./game/types";
 
@@ -54,6 +54,7 @@ function App() {
   const [pendingAction, setPendingAction] = useState<Action | null>(null);
   const [cutIn, setCutIn] = useState<CutIn | null>(null);
   const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]);
+  const [albumAchievement, setAlbumAchievement] = useState<Achievement | null>(null);
   const lastCutInKey = useRef("");
   const previouslyEarnedAchievements = useRef(new Set(
     achievementCollection(state).filter((achievement) => achievement.earned).map((achievement) => achievement.id),
@@ -132,6 +133,7 @@ function App() {
     if (!currentTurn) return;
     setState((previous) => applyAction(previous, action, currentTurn.label, turns.length, currentTurn.id));
     setPendingAction(null);
+    setAlbumAchievement(null);
     setNotice(`「${action.title}」を選びました`);
     scrollToDecision();
   };
@@ -254,6 +256,19 @@ function App() {
 
   return (
     <main>
+      {albumAchievement && <button className={`achievement-album-view ${albumAchievement.hidden ? "is-secret" : ""}`} onClick={() => setAlbumAchievement(null)} aria-label={`${albumAchievement.title}の詳細。タップして閉じる`}>
+        <span className="album-card">
+          <img src={albumAchievement.artwork} alt="" />
+          <span className="album-copy">
+            <small>{achievementRarity(albumAchievement).label} TITLE</small>
+            <span className="album-stars" aria-label={`レア度 ${achievementRarity(albumAchievement).stars}`}>{"★".repeat(achievementRarity(albumAchievement).stars)}{"☆".repeat(5 - achievementRarity(albumAchievement).stars)}</span>
+            <strong><i aria-hidden="true">{albumAchievement.icon}</i>{albumAchievement.title}</strong>
+            <b>{albumAchievement.description}</b>
+            <span className="album-condition"><em>獲得条件</em>{albumAchievement.hidden ? albumAchievement.revealedHint : albumAchievement.hint}</span>
+          </span>
+        </span>
+        <span className="achievement-skip">タップで閉じる</span>
+      </button>}
       {activeAchievement && <button className={`achievement-cut-in ${activeAchievement.hidden ? "is-secret" : ""}`} onClick={() => setAchievementQueue((current) => current.slice(1))} aria-live="assertive" aria-label={`新しい称号「${activeAchievement.title}」を獲得。${activeAchievement.description}。タップして閉じる`}>
         <span className="achievement-rays" aria-hidden="true" />
         <span className="achievement-art"><img src={activeAchievement.artwork} alt="" /></span>
@@ -535,10 +550,13 @@ function App() {
           <details className="title-collection">
             <summary><span><small>TITLE COLLECTION</small><strong>獲得称号</strong></span><b>{earnedTitleCount} / {titleCollection.length}</b></summary>
             <div className="title-grid">
-              {titleCollection.map((item) => <article className={`${item.earned ? "earned" : "locked"} ${item.hidden ? "secret" : ""}`} key={item.id}>
-                {item.earned ? <img src={item.artwork} alt="" loading="lazy" /> : <span aria-hidden="true">{item.hidden ? "❔" : "🔒"}</span>}
-                <div><strong>{item.earned || !item.hidden ? item.title : "？？？"}</strong><small>{item.earned ? item.description : item.hint}</small></div>
-                {item.earned && <b>GET!</b>}
+              {titleCollection.map((item) => item.earned ? <button className={`title-item earned ${item.hidden ? "secret" : ""}`} key={item.id} onClick={() => setAlbumAchievement(item)} aria-label={`${item.title}のイラストを見る`}>
+                <img src={item.artwork} alt="" loading="lazy" />
+                <span><strong>{item.title}</strong><small>{item.description}</small></span>
+                <b>見る →</b>
+              </button> : <article className={`title-item locked ${item.hidden ? "secret" : ""}`} key={item.id}>
+                <span aria-hidden="true">{item.hidden ? "❔" : "🔒"}</span>
+                <div><strong>{!item.hidden ? item.title : "？？？"}</strong><small>{item.hint}</small></div>
               </article>)}
             </div>
             <p>隠し称号は、思いがけない政策の組み合わせで見つかります。</p>
