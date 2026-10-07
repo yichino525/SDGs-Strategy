@@ -13,7 +13,8 @@ import { buildWitnessReaction, pledgeProgress } from "./game/storyEngine";
 import { playerLevel, playerSkills, playerTitle, skillImpact, totalSdgsPoints } from "./game/playerProfile";
 import { buildAnnualReview, cityRank, riskWarnings } from "./game/progression";
 import { attemptSpecialProject, declineSpecialProject, nextSpecialProject, projectChance } from "./game/specialProjectEngine";
-import { achievementCollection } from "./game/achievements";
+import { achievementCollection, newlyUnlockedAchievements } from "./game/achievements";
+import type { Achievement } from "./game/achievements";
 import type { Action, Effects, GameState, PledgeId } from "./game/types";
 
 const ResourceCard = ({ label, value, icon }: { label: string; value: number; icon: string }) => (
@@ -52,7 +53,11 @@ function App() {
   const [showPrologue, setShowPrologue] = useState(state.history.length === 0);
   const [pendingAction, setPendingAction] = useState<Action | null>(null);
   const [cutIn, setCutIn] = useState<CutIn | null>(null);
+  const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]);
   const lastCutInKey = useRef("");
+  const previouslyEarnedAchievements = useRef(new Set(
+    achievementCollection(state).filter((achievement) => achievement.earned).map((achievement) => achievement.id),
+  ));
   const lastAction = state.report;
   const lastActionIcon = actionIcon(state.history.at(-1)?.actionId ?? "");
   const [notice, setNotice] = useState("選択は自動的に保存されます");
@@ -89,6 +94,20 @@ function App() {
   useEffect(() => {
     saveGame(state);
   }, [state]);
+
+  useEffect(() => {
+    const unlocked = newlyUnlockedAchievements(state, previouslyEarnedAchievements.current);
+    previouslyEarnedAchievements.current = new Set(
+      titleCollection.filter((achievement) => achievement.earned).map((achievement) => achievement.id),
+    );
+    if (unlocked.length) setAchievementQueue((current) => [...current, ...unlocked]);
+  }, [state, titleCollection]);
+
+  useEffect(() => {
+    if (!achievementQueue.length) return;
+    const timer = window.setTimeout(() => setAchievementQueue((current) => current.slice(1)), 5000);
+    return () => window.clearTimeout(timer);
+  }, [achievementQueue]);
 
   useEffect(() => {
     if (showPrologue || !state.pledge) return;
@@ -181,6 +200,7 @@ function App() {
   };
 
   const formatDelta = (value: number) => `${value > 0 ? "+" : ""}${value}`;
+  const activeAchievement = achievementQueue[0];
 
   if (showPrologue) {
     return (
@@ -234,6 +254,12 @@ function App() {
 
   return (
     <main>
+      {activeAchievement && <button className={`achievement-cut-in ${activeAchievement.hidden ? "is-secret" : ""}`} onClick={() => setAchievementQueue((current) => current.slice(1))} aria-live="assertive" aria-label={`新しい称号「${activeAchievement.title}」を獲得。${activeAchievement.description}。タップして閉じる`}>
+        <span className="achievement-rays" aria-hidden="true" />
+        <span className="achievement-art"><img src={activeAchievement.artwork} alt="" /></span>
+        <span className="achievement-copy"><small>{activeAchievement.hidden ? "SECRET TITLE FOUND" : "NEW TITLE UNLOCKED"}</small><span aria-hidden="true">{activeAchievement.icon}</span><strong>{activeAchievement.title}</strong><b>{activeAchievement.description}</b></span>
+        <span className="achievement-skip">タップで閉じる</span>
+      </button>}
       {cutIn && <button className={`cut-in cut-in-${cutIn.kind}`} onClick={() => setCutIn(null)} aria-label={`${cutIn.title}。${cutIn.subtitle}。タップして閉じる`}>
         <span className="cut-in-speedlines" aria-hidden="true" />
         <span className="cut-in-year">{sceneYear}</span>
@@ -510,7 +536,7 @@ function App() {
             <summary><span><small>TITLE COLLECTION</small><strong>獲得称号</strong></span><b>{earnedTitleCount} / {titleCollection.length}</b></summary>
             <div className="title-grid">
               {titleCollection.map((item) => <article className={`${item.earned ? "earned" : "locked"} ${item.hidden ? "secret" : ""}`} key={item.id}>
-                <span aria-hidden="true">{item.earned ? item.icon : item.hidden ? "❔" : "🔒"}</span>
+                {item.earned ? <img src={item.artwork} alt="" loading="lazy" /> : <span aria-hidden="true">{item.hidden ? "❔" : "🔒"}</span>}
                 <div><strong>{item.earned || !item.hidden ? item.title : "？？？"}</strong><small>{item.earned ? item.description : item.hint}</small></div>
                 {item.earned && <b>GET!</b>}
               </article>)}

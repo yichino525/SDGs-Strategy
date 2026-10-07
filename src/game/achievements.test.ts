@@ -1,13 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { achievementCollection, featuredAchievement } from "./achievements";
+import { achievementCollection, achievements, featuredAchievement, newlyUnlockedAchievements } from "./achievements";
 import { createInitialState } from "./scoreEngine";
 
 describe("称号コレクション", () => {
+  it("すべての称号に専用イラストがある", () => {
+    expect(achievements).toHaveLength(18);
+    expect(new Set(achievements.map((achievement) => achievement.artwork)).size).toBe(18);
+    expect(achievements.every((achievement) => achievement.artwork.endsWith(`${achievement.id}.jpg`))).toBe(true);
+  });
+
   it("最初は称号が未獲得で、選択後に第一歩を獲得する", () => {
     const state = createInitialState();
     expect(achievementCollection(state).filter((item) => item.earned)).toHaveLength(0);
     state.history.push({ turnId: "0", turnLabel: "2015年", actionId: "child-support", actionTitle: "子ども支援" });
     expect(achievementCollection(state).find((item) => item.id === "first-step")?.earned).toBe(true);
+  });
+
+  it("今回新しく獲得した称号だけを返す", () => {
+    const state = createInitialState();
+    state.history.push({ turnId: "0", turnLabel: "2015年", actionId: "child-support", actionTitle: "子ども支援" });
+    expect(newlyUnlockedAchievements(state, new Set())).toHaveLength(1);
+    expect(newlyUnlockedAchievements(state, new Set(["first-step"]))).toHaveLength(0);
   });
 
   it("隠し称号は特別な組み合わせで解除される", () => {

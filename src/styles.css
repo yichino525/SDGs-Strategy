@@ -43,6 +43,23 @@ main { width: min(1440px, 100%); margin: 0 auto; padding: 40px clamp(18px, 4vw, 
 .cut-in-copy strong { max-width: 900px; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(2.2rem, 6vw, 6.4rem); line-height: 1.03; }
 .cut-in-copy b { max-width: 760px; color: #d9fff4; font-size: clamp(.95rem, 2vw, 1.65rem); line-height: 1.45; }
 .cut-in-skip { position: absolute; right: 24px; bottom: 20px; padding: 7px 12px; border: 1px solid rgba(255,255,255,.45); border-radius: 999px; color: rgba(255,255,255,.72); font-size: .68rem; }
+.achievement-cut-in { position: fixed; inset: 0; z-index: 1100; display: grid; grid-template-columns: minmax(260px, 520px) minmax(280px, 620px); align-items: center; justify-content: center; gap: clamp(26px, 5vw, 78px); width: 100%; height: 100%; padding: clamp(24px, 6vw, 90px); overflow: hidden; border: 0; background: radial-gradient(circle at 35% 45%, #73551d 0, #211a35 42%, #071522 100%); color: #fff; text-align: left; cursor: pointer; animation: achievement-enter .35s ease-out, achievement-leave .35s 4.62s ease-in forwards; }
+.achievement-cut-in.is-secret { background: radial-gradient(circle at 35% 45%, #4a2c72 0, #17172e 45%, #050b18 100%); }
+.achievement-rays { position: absolute; inset: -45%; opacity: .22; background: repeating-conic-gradient(from 0deg at 50% 50%, #ffe58b 0deg 4deg, transparent 4deg 12deg); animation: achievement-rays 9s linear infinite; }
+.achievement-art { position: relative; display: block; width: min(40vw, 520px); aspect-ratio: 1; padding: clamp(7px, 1vw, 13px); border: 3px solid #ffe398; border-radius: 30px; background: #fff2b8; box-shadow: 0 0 0 8px rgba(255,224,125,.16), 0 28px 70px rgba(0,0,0,.48); transform: rotate(-3deg); animation: achievement-art-in .65s cubic-bezier(.14,1.18,.36,1) both; }
+.achievement-art::after { content: ""; position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,.62); border-radius: 20px; pointer-events: none; }
+.achievement-art img { display: block; width: 100%; height: 100%; border-radius: 20px; object-fit: cover; }
+.achievement-copy { position: relative; display: grid; justify-items: start; gap: 10px; animation: achievement-copy-in .55s .18s both; }
+.achievement-copy small { color: #ffe07e; font-weight: 1000; letter-spacing: .2em; }
+.achievement-copy > span { display: grid; width: 68px; height: 68px; place-items: center; border: 2px solid #ffe198; border-radius: 50%; background: #4c3922; font-size: 2rem; box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+.achievement-copy strong { max-width: 620px; color: #fff4bd; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(2.5rem, 5.8vw, 5.9rem); line-height: 1.05; text-shadow: 0 5px 0 rgba(0,0,0,.28); }
+.achievement-copy b { max-width: 560px; color: #e4edf0; font-size: clamp(.95rem, 1.7vw, 1.35rem); line-height: 1.65; }
+.achievement-skip { position: absolute; right: 24px; bottom: 20px; padding: 7px 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 999px; color: rgba(255,255,255,.75); font-size: .68rem; }
+@keyframes achievement-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes achievement-leave { to { opacity: 0; visibility: hidden; } }
+@keyframes achievement-rays { to { transform: rotate(360deg); } }
+@keyframes achievement-art-in { from { opacity: 0; transform: translateX(-25vw) rotate(-18deg) scale(.55); } to { opacity: 1; transform: translateX(0) rotate(-3deg) scale(1); } }
+@keyframes achievement-copy-in { from { opacity: 0; transform: translateX(18vw); } to { opacity: 1; transform: translateX(0); } }
 @keyframes cut-in-enter { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cut-in-leave { to { opacity: 0; visibility: hidden; } }
 @keyframes cut-in-slash { to { transform: rotate(-7deg) scaleX(1); } }
@@ -346,8 +363,9 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .title-collection summary strong { color: #fff3c0; }
 .title-collection summary > b { padding: 5px 9px; border-radius: 999px; background: #f0c75d; color: #3d2a0d; font-size: .75rem; }
 .title-grid { display: grid; gap: 7px; max-height: 390px; padding: 0 12px 12px; overflow-y: auto; }
-.title-grid article { position: relative; display: grid; grid-template-columns: 36px 1fr; align-items: center; gap: 9px; min-height: 54px; padding: 8px 10px; border: 1px solid #57606f; border-radius: 11px; background: #222d40; }
+.title-grid article { position: relative; display: grid; grid-template-columns: 48px 1fr; align-items: center; gap: 9px; min-height: 62px; padding: 7px 10px; border: 1px solid #57606f; border-radius: 11px; background: #222d40; }
 .title-grid article > span { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: #354256; }
+.title-grid article > img { display: block; width: 46px; height: 46px; border: 2px solid #f8d572; border-radius: 11px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,.28); }
 .title-grid article strong, .title-grid article small { display: block; }
 .title-grid article strong { color: #d9e1e4; font-size: .75rem; }
 .title-grid article small { margin-top: 3px; color: #8f9ca5; font-size: .65rem; line-height: 1.35; }
@@ -444,6 +462,13 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .cut-in-copy { justify-items: center; }
   .cut-in-copy strong { font-size: clamp(2.1rem, 12vw, 3.4rem); }
   .cut-in-copy b { font-size: .95rem; }
+  .achievement-cut-in { grid-template-columns: 1fr; align-content: center; justify-items: center; gap: 20px; padding: 28px 22px; text-align: center; }
+  .achievement-art { width: min(72vw, 330px); border-radius: 23px; }
+  .achievement-art img { border-radius: 15px; }
+  .achievement-copy { justify-items: center; gap: 7px; }
+  .achievement-copy > span { width: 50px; height: 50px; font-size: 1.5rem; }
+  .achievement-copy strong { font-size: clamp(2rem, 10vw, 3.25rem); }
+  .achievement-copy b { font-size: .9rem; }
   main { padding-top: 24px; }
   .hero { flex-direction: column; align-items: stretch; gap: 14px; }
   .turn-badge { min-width: 92px; padding: 11px; }
@@ -500,6 +525,6 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cut-in, .cut-in::before, .cut-in::after, .cut-in-speedlines, .cut-in-year, .cut-in-icon, .cut-in-copy { animation: none !important; }
+  .cut-in, .cut-in::before, .cut-in::after, .cut-in-speedlines, .cut-in-year, .cut-in-icon, .cut-in-copy, .achievement-cut-in, .achievement-rays, .achievement-art, .achievement-copy { animation: none !important; }
   .cut-in::before, .cut-in::after { transform: rotate(-7deg) scaleX(1); }
 }

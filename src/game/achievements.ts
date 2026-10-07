@@ -5,6 +5,7 @@ import type { GameState } from "./types";
 export type Achievement = {
   id: string;
   icon: string;
+  artwork: string;
   title: string;
   description: string;
   hint: string;
@@ -12,11 +13,13 @@ export type Achievement = {
   unlocked: (state: GameState) => boolean;
 };
 
+type AchievementDefinition = Omit<Achievement, "artwork">;
+
 const chosen = (state: GameState, id: string) => state.history.some((entry) => entry.actionId === id);
 const chosenCount = (state: GameState, ids: string[]) => ids.filter((id) => chosen(state, id)).length;
 const specialSuccesses = (state: GameState) => state.specialProjects?.filter((item) => item.outcome === "success").length ?? 0;
 
-export const achievements: Achievement[] = [
+const achievementDefinitions: AchievementDefinition[] = [
   { id: "first-step", icon: "🌱", title: "未来への第一歩", description: "最初の政策を決断した証。", hint: "最初の年を進める", unlocked: (state) => state.history.length >= 1 },
   { id: "four-year-mayor", icon: "🗓️", title: "一期を走り抜けた市長", description: "4年間、選択を積み重ねました。", hint: "4ターン進める", unlocked: (state) => state.history.length >= 4 },
   { id: "trusted-mayor", icon: "🤝", title: "市民と歩む市長", description: "高い信頼を集めた市政です。", hint: "社会的信頼を75以上にする", unlocked: (state) => state.resources.trust >= 75 },
@@ -37,6 +40,11 @@ export const achievements: Achievement[] = [
   { id: "last-coin", icon: "🪽", title: "最後の一枚まで未来へ", description: "ほぼ全予算を使い切って2030年へ到達しました。", hint: "？？？", hidden: true, unlocked: (state) => state.completed && !state.gameOver && state.resources.budget <= 2 },
 ];
 
+export const achievements: Achievement[] = achievementDefinitions.map((achievement) => ({
+  ...achievement,
+  artwork: `/achievements/${achievement.id}.jpg`,
+}));
+
 export const achievementCollection = (state: GameState) => achievements.map((achievement) => ({
   ...achievement,
   earned: achievement.unlocked(state),
@@ -44,3 +52,6 @@ export const achievementCollection = (state: GameState) => achievements.map((ach
 
 export const featuredAchievement = (state: GameState) =>
   [...achievementCollection(state)].reverse().find((achievement) => achievement.earned);
+
+export const newlyUnlockedAchievements = (state: GameState, previouslyEarned: ReadonlySet<string>) =>
+  achievementCollection(state).filter((achievement) => achievement.earned && !previouslyEarned.has(achievement.id));
