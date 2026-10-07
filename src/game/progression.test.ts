@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { applyAction, createInitialState } from "./scoreEngine";
-import { buildAnnualReview, cityRank, evaluateGameOver, riskWarnings } from "./progression";
+import { buildAnnualReview, cityRank, evaluateBudgetDeadlock, evaluateGameOver, minimumActionCost, riskWarnings } from "./progression";
 import { turns } from "../data/turns";
 
 describe("年次進行とゲームオーバー", () => {
@@ -55,5 +55,18 @@ describe("年次進行とゲームオーバー", () => {
       if (state.gameOver) break;
     }
     expect(state.gameOver?.reason).toBe("election");
+  });
+
+  it("予算不足で全選択肢が無効なら財政ゲームオーバーになる", () => {
+    const state = createInitialState();
+    const turn = turns.find((candidate) => candidate.id.startsWith("2027"))!;
+    state.resources.budget = 2;
+    expect(Math.min(...turn.actions.map(minimumActionCost))).toBe(3);
+    expect(evaluateBudgetDeadlock(state, turn)).toMatchObject({
+      reason: "fiscal",
+      title: "予算が尽き、政策を選べなくなりました",
+    });
+    state.resources.budget = 3;
+    expect(evaluateBudgetDeadlock(state, turn)).toBeUndefined();
   });
 });

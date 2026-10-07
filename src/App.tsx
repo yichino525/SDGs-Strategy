@@ -11,7 +11,7 @@ import { alignProgress, applyAction, averageGoalScore, createInitialState } from
 import { clearSave, loadGame, saveGame } from "./game/storage";
 import { buildWitnessReaction, pledgeProgress } from "./game/storyEngine";
 import { playerLevel, playerSkills, playerTitle, skillImpact, totalSdgsPoints } from "./game/playerProfile";
-import { buildAnnualReview, cityRank, riskWarnings } from "./game/progression";
+import { buildAnnualReview, cityRank, evaluateBudgetDeadlock, minimumActionCost, riskWarnings } from "./game/progression";
 import { attemptSpecialProject, declineSpecialProject, nextSpecialProject, projectChance } from "./game/specialProjectEngine";
 import { achievementCollection, achievementRarity, newlyUnlockedAchievements } from "./game/achievements";
 import type { Achievement } from "./game/achievements";
@@ -95,6 +95,12 @@ function App() {
   useEffect(() => {
     saveGame(state);
   }, [state]);
+
+  useEffect(() => {
+    if (!currentTurn || state.report || state.specialProjectReport || specialProject || state.gameOver) return;
+    const gameOver = evaluateBudgetDeadlock(state, currentTurn);
+    if (gameOver) setState((previous) => previous.gameOver ? previous : { ...previous, gameOver, completed: true });
+  }, [currentTurn, specialProject, state, state.gameOver, state.report, state.specialProjectReport]);
 
   useEffect(() => {
     const unlocked = newlyUnlockedAchievements(state, previouslyEarnedAchievements.current);
@@ -509,8 +515,8 @@ function App() {
               <div className="actions action-deck">
                 {currentTurn.actions.map((action) => {
                   const plan = implementationPlans[action.id];
-                  const costs = plan ? plan.options.map((option) => Math.max(0, -(option.effects.budget ?? 0))) : [Math.max(0, -(action.effects.budget ?? 0))];
-                  const minimumCost = Math.min(...costs);
+                  const costs = plan ? plan.options.map((option) => Math.max(0, -(option.effects.budget ?? 0))) : [minimumActionCost(action)];
+                  const minimumCost = minimumActionCost(action);
                   const costLabel = costs.length > 1 ? `${minimumCost}〜${Math.max(...costs)}` : `${minimumCost}`;
                   return <button className="action-card" key={action.id} disabled={state.resources.budget < minimumCost} onClick={() => chooseAction(action)}>
                     <span className="choice-ribbon">CHOICE {String.fromCharCode(65 + currentTurn.actions.indexOf(action))}</span>

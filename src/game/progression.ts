@@ -1,6 +1,7 @@
 import { playerSkills, totalSdgsPoints } from "./playerProfile";
 import { featuredAchievement } from "./achievements";
-import type { GameOver, GameState, Turn } from "./types";
+import { implementationPlans } from "../data/strategy";
+import type { Action, GameOver, GameState, Turn } from "./types";
 
 const electionYears = new Set([2019, 2023, 2027]);
 const disasterTurns = new Set(["2017-q4", "2023-q4", "2028-q4"]);
@@ -85,6 +86,24 @@ export const evaluateGameOver = (state: GameState, turnId?: string): GameOver | 
   }
 
   return undefined;
+};
+
+export const minimumActionCost = (action: Action) => {
+  const choices = implementationPlans[action.id]?.options ?? [action];
+  return Math.min(...choices.map((choice) => Math.max(0, -(choice.effects.budget ?? 0))));
+};
+
+// すべてのボタンが無効なまま進行不能になる状態を、明確な結末として扱う。
+export const evaluateBudgetDeadlock = (state: GameState, turn?: Turn): GameOver | undefined => {
+  if (!turn || state.completed || state.gameOver) return undefined;
+  if (turn.actions.some((action) => minimumActionCost(action) <= state.resources.budget)) return undefined;
+  const minimumCost = Math.min(...turn.actions.map(minimumActionCost));
+  return {
+    reason: "fiscal",
+    title: "予算が尽き、政策を選べなくなりました",
+    text: `残り予算は${state.resources.budget}。この年に必要な最小予算${minimumCost}を用意できず、市政を続けられません。`,
+    advice: "序盤から予算を使い切らず、税収を育てる政策や低予算の選択も組み合わせてみましょう。",
+  };
 };
 
 export const riskWarnings = (state: GameState, turn?: Turn) => {
