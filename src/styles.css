@@ -43,6 +43,18 @@ main { width: min(1440px, 100%); margin: 0 auto; padding: 40px clamp(18px, 4vw, 
 .cut-in-copy strong { max-width: 900px; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(2.2rem, 6vw, 6.4rem); line-height: 1.03; }
 .cut-in-copy b { max-width: 760px; color: #d9fff4; font-size: clamp(.95rem, 2vw, 1.65rem); line-height: 1.45; }
 .cut-in-skip { position: absolute; right: 24px; bottom: 20px; padding: 7px 12px; border: 1px solid rgba(255,255,255,.45); border-radius: 999px; color: rgba(255,255,255,.72); font-size: .68rem; }
+.header-tools { display: grid; justify-items: end; gap: 8px; }
+.restart-button { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid #7f96a7; border-radius: 999px; background: rgba(8,29,48,.68); color: #d8e8e7; font-size: .7rem; font-weight: 800; cursor: pointer; }
+.restart-button:hover, .restart-button:focus-visible { border-color: #f1cf73; color: #fff3bd; }
+.restart-dialog { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 20px; background: rgba(3,11,25,.9); }
+.restart-dialog > div { display: grid; justify-items: center; gap: 12px; width: min(500px, 100%); padding: clamp(26px, 5vw, 46px); border: 2px solid #edca69; border-radius: 24px; background: linear-gradient(145deg, #202b52, #112d38); color: #fff; text-align: center; box-shadow: 0 28px 80px rgba(0,0,0,.52); }
+.restart-dialog > div > span { display: grid; width: 70px; height: 70px; place-items: center; border-radius: 50%; background: #f0ca64; color: #2d2515; font-size: 2.4rem; font-weight: 1000; }
+.restart-dialog p { margin: 0; color: #bed1d0; line-height: 1.6; }
+.restart-dialog > div > p:first-of-type { color: #f0ca64; font-size: .7rem; font-weight: 1000; letter-spacing: .18em; }
+.restart-dialog h2 { margin: 0; color: #fff2bd; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(1.6rem, 5vw, 2.4rem); }
+.restart-dialog > div > div { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 8px; }
+.restart-dialog button { min-height: 48px; padding: 10px 14px; border: 1px solid #769096; border-radius: 12px; background: #173841; color: #e7f2ef; font-weight: 900; cursor: pointer; }
+.restart-dialog button.restart-confirm { border-color: #f08e75; background: #6b2e34; color: #fff1df; }
 .achievement-cut-in { position: fixed; inset: 0; z-index: 1100; display: grid; grid-template-columns: minmax(260px, 520px) minmax(280px, 620px); align-items: center; justify-content: center; gap: clamp(26px, 5vw, 78px); width: 100%; height: 100%; padding: clamp(24px, 6vw, 90px); overflow: hidden; border: 0; background: radial-gradient(circle at 35% 45%, #73551d 0, #211a35 42%, #071522 100%); color: #fff; text-align: left; cursor: pointer; animation: achievement-enter .35s ease-out, achievement-leave .35s 4.62s ease-in forwards; }
 .achievement-cut-in.is-secret { background: radial-gradient(circle at 35% 45%, #4a2c72 0, #17172e 45%, #050b18 100%); }
 .achievement-rays { position: absolute; inset: -45%; opacity: .22; background: repeating-conic-gradient(from 0deg at 50% 50%, #ffe58b 0deg 4deg, transparent 4deg 12deg); animation: achievement-rays 9s linear infinite; }
@@ -489,6 +501,9 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
   .album-condition { text-align: left; }
   main { padding-top: 24px; }
   .hero { flex-direction: column; align-items: stretch; gap: 14px; }
+  .header-tools { grid-template-columns: 1fr auto; align-items: center; justify-items: start; }
+  .header-tools .turn-badge { justify-self: end; }
+  .restart-dialog > div > div { grid-template-columns: 1fr; }
   .turn-badge { min-width: 92px; padding: 11px; }
   .lead { font-size: .9rem; }
   .dashboard { gap: 8px; }

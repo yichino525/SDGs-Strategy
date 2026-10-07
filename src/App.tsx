@@ -55,6 +55,7 @@ function App() {
   const [cutIn, setCutIn] = useState<CutIn | null>(null);
   const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]);
   const [albumAchievement, setAlbumAchievement] = useState<Achievement | null>(null);
+  const [showRestartConfirm, setShowRestartConfirm] = useState(false);
   const lastCutInKey = useRef("");
   const previouslyEarnedAchievements = useRef(new Set(
     achievementCollection(state).filter((achievement) => achievement.earned).map((achievement) => achievement.id),
@@ -140,6 +141,7 @@ function App() {
     setState((previous) => applyAction(previous, action, currentTurn.label, turns.length, currentTurn.id));
     setPendingAction(null);
     setAlbumAchievement(null);
+    setShowRestartConfirm(false);
     setNotice(`「${action.title}」を選びました`);
     scrollToDecision();
   };
@@ -262,6 +264,15 @@ function App() {
 
   return (
     <main>
+      {showRestartConfirm && <div className="restart-dialog" role="dialog" aria-modal="true" aria-labelledby="restart-title">
+        <div>
+          <span aria-hidden="true">↺</span>
+          <p>NEW GAME</p>
+          <h2 id="restart-title">本当に最初から始めますか？</h2>
+          <p>現在の市政と獲得状況はブラウザから消え、プロローグへ戻ります。</p>
+          <div><button onClick={() => setShowRestartConfirm(false)}>今のゲームを続ける</button><button className="restart-confirm" onClick={restart}>セーブを消して最初から</button></div>
+        </div>
+      </div>}
       {albumAchievement && <button className={`achievement-album-view ${albumAchievement.hidden ? "is-secret" : ""}`} onClick={() => setAlbumAchievement(null)} aria-label={`${albumAchievement.title}の詳細。タップして閉じる`}>
         <span className="album-card">
           <img src={albumAchievement.artwork} alt="" />
@@ -294,9 +305,12 @@ function App() {
           <h1>未来は、市長の選択から。</h1>
           <p className="lead">架空都市「みらい市」で、アイデアを選びながら17のゴールに向き合うゲームです。</p>
         </div>
-        <div className="turn-badge" aria-label={`進行 ${Math.min(state.turnIndex + 1, turns.length)} / ${turns.length}`}>
-          <span>{activeTurn?.chapter ?? "第1章"}</span>
-          <strong>{Math.min(state.turnIndex + 1, turns.length)} / {turns.length}</strong>
+        <div className="header-tools">
+          <button className="restart-button" onClick={() => setShowRestartConfirm(true)}><span aria-hidden="true">↺</span>最初から</button>
+          <div className="turn-badge" aria-label={`進行 ${Math.min(state.turnIndex + 1, turns.length)} / ${turns.length}`}>
+            <span>{activeTurn?.chapter ?? "第1章"}</span>
+            <strong>{Math.min(state.turnIndex + 1, turns.length)} / {turns.length}</strong>
+          </div>
         </div>
       </header>
 
