@@ -1,4 +1,5 @@
 import { playerSkills, totalSdgsPoints } from "./playerProfile";
+import { featuredAchievement } from "./achievements";
 import type { GameOver, GameState, Turn } from "./types";
 
 const electionYears = new Set([2019, 2023, 2027]);
@@ -21,7 +22,7 @@ export const cityRank = (state: GameState) => {
   return { grade: "D", label: "立て直しが必要な市政", score };
 };
 
-const earnedTitle = (state: GameState) => {
+const skillTitle = (state: GameState) => {
   const skills = playerSkills(state);
   const strongest = [...skills].sort((a, b) => b.score - a.score)[0];
   if (Math.min(...skills.map((skill) => skill.score)) >= 75) return "五つ星の未来市長";
@@ -116,7 +117,7 @@ export const buildAnnualReview = (state: GameState, turnId?: string) => {
     points: totalSdgsPoints(state),
     approval,
     rank,
-    title: earnedTitle(state),
+    title: featuredAchievement(state)?.title ?? skillTitle(state),
     traits: annualTraits(state),
     nextGoal: `${attention.label}を${Math.min(100, attention.score + 5)}まで伸ばす`,
     strongest,

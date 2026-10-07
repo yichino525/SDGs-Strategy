@@ -338,6 +338,26 @@ h1 { max-width: 800px; margin: 0; font-family: Georgia, "Yu Mincho", serif; font
 .project-progress > div > span.success b { background: #f5c94e; color: #37260b; }
 .project-progress > div > span.failure, .project-progress > div > span.declined { filter: none; opacity: .72; }
 .project-progress > small { display: block; margin-top: 10px; color: #99b0ad; line-height: 1.45; }
+.title-collection { margin-bottom: 20px; border: 2px solid #d1a94d; border-radius: 15px; background: linear-gradient(145deg, #43331d, #202a4c); }
+.title-collection summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px; cursor: pointer; list-style: none; }
+.title-collection summary::-webkit-details-marker { display: none; }
+.title-collection summary span { display: grid; gap: 3px; }
+.title-collection summary small { color: #f1c95e; font-size: .62rem; font-weight: 900; letter-spacing: .12em; }
+.title-collection summary strong { color: #fff3c0; }
+.title-collection summary > b { padding: 5px 9px; border-radius: 999px; background: #f0c75d; color: #3d2a0d; font-size: .75rem; }
+.title-grid { display: grid; gap: 7px; max-height: 390px; padding: 0 12px 12px; overflow-y: auto; }
+.title-grid article { position: relative; display: grid; grid-template-columns: 36px 1fr; align-items: center; gap: 9px; min-height: 54px; padding: 8px 10px; border: 1px solid #57606f; border-radius: 11px; background: #222d40; }
+.title-grid article > span { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: #354256; }
+.title-grid article strong, .title-grid article small { display: block; }
+.title-grid article strong { color: #d9e1e4; font-size: .75rem; }
+.title-grid article small { margin-top: 3px; color: #8f9ca5; font-size: .65rem; line-height: 1.35; }
+.title-grid article.earned { border-color: #e4bf59; background: linear-gradient(100deg, #61471d, #32345a); box-shadow: inset 3px 0 #ffd86e; }
+.title-grid article.earned > span { background: #fff0a8; }
+.title-grid article.earned strong { color: #fff3b5; }
+.title-grid article.earned small { color: #d9d8c6; }
+.title-grid article > b { position: absolute; top: 4px; right: 5px; color: #ffe174; font-size: .52rem; transform: rotate(8deg); }
+.title-grid article.secret.locked { border-style: dashed; background: #1b2431; }
+.title-collection > p { margin: 0; padding: 0 14px 14px; color: #b7aa8d; font-size: .68rem; line-height: 1.45; }
 
 .goals-panel { padding: 24px; }
 .section-heading { display: flex; justify-content: space-between; align-items: start; gap: 16px; }

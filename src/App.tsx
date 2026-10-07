@@ -13,6 +13,7 @@ import { buildWitnessReaction, pledgeProgress } from "./game/storyEngine";
 import { playerLevel, playerSkills, playerTitle, skillImpact, totalSdgsPoints } from "./game/playerProfile";
 import { buildAnnualReview, cityRank, riskWarnings } from "./game/progression";
 import { attemptSpecialProject, declineSpecialProject, nextSpecialProject, projectChance } from "./game/specialProjectEngine";
+import { achievementCollection } from "./game/achievements";
 import type { Action, Effects, GameState, PledgeId } from "./game/types";
 
 const ResourceCard = ({ label, value, icon }: { label: string; value: number; icon: string }) => (
@@ -80,6 +81,8 @@ function App() {
   const warnings = useMemo(() => riskWarnings(state, currentTurn), [currentTurn, state]);
   const rank = useMemo(() => cityRank(state), [state]);
   const specialProject = useMemo(() => state.report || state.specialProjectReport || state.completed ? undefined : nextSpecialProject(state), [state]);
+  const titleCollection = useMemo(() => achievementCollection(state), [state]);
+  const earnedTitleCount = titleCollection.filter((item) => item.earned).length;
   const sceneYear = Number(activeTurn?.id.slice(0, 4) ?? 2015);
   const cityEra = sceneYear < 2020 ? "start" : sceneYear < 2024 ? "recovery" : sceneYear < 2028 ? "transform" : "future";
 
@@ -503,6 +506,17 @@ function App() {
         </section>
 
         <aside className="goals-panel">
+          <details className="title-collection">
+            <summary><span><small>TITLE COLLECTION</small><strong>獲得称号</strong></span><b>{earnedTitleCount} / {titleCollection.length}</b></summary>
+            <div className="title-grid">
+              {titleCollection.map((item) => <article className={`${item.earned ? "earned" : "locked"} ${item.hidden ? "secret" : ""}`} key={item.id}>
+                <span aria-hidden="true">{item.earned ? item.icon : item.hidden ? "❔" : "🔒"}</span>
+                <div><strong>{item.earned || !item.hidden ? item.title : "？？？"}</strong><small>{item.earned ? item.description : item.hint}</small></div>
+                {item.earned && <b>GET!</b>}
+              </article>)}
+            </div>
+            <p>隠し称号は、思いがけない政策の組み合わせで見つかります。</p>
+          </details>
           <section className="project-progress" aria-label="大型プロジェクトの記録">
             <p className="eyebrow">BIG PROJECTS</p><h3>未来を変える大計画</h3>
             <div>{specialProjects.map((project) => {
